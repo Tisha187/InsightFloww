@@ -1,0 +1,144 @@
+<section class="datasets-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">YOUR WORKSPACE</p>
+      <h1>Your datasets</h1>
+      <p class="subtitle">
+        Browse and manage the data you've uploaded to InsightFlow AI.
+      </p>
+    </div>
+
+    <a routerLink="/upload" class="primary-button">
+      <span aria-hidden="true">＋</span> Upload dataset
+    </a>
+  </header>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <span>Total datasets</span>
+      <strong>{{ datasets.length }}</strong>
+    </article>
+
+    <article class="summary-card">
+      <span>Ready to explore</span>
+      <strong>{{ readyCount }}</strong>
+    </article>
+
+    <article class="summary-card">
+      <span>Total rows</span>
+      <strong>{{ totalRows | number }}</strong>
+    </article>
+  </section>
+
+  <section class="datasets-panel">
+    <div class="toolbar">
+      <div>
+        <h2>All datasets</h2>
+        <p>Find the dataset you want to explore.</p>
+      </div>
+
+      <div class="filters">
+        <input type="search"
+               aria-label="Search datasets"
+               placeholder="Search datasets..."
+               [value]="searchTerm"
+               (input)="searchTerm = $any($event.target).value" />
+
+        <select aria-label="Filter by status"
+                [value]="selectedStatus"
+                (change)="selectedStatus = $any($event.target).value">
+          <option value="All">All statuses</option>
+          <option value="Ready">Ready</option>
+          <option value="Uploaded">Uploaded</option>
+          <option value="Processing">Processing</option>
+          <option value="Failed">Failed</option>
+        </select>
+      </div>
+    </div>
+
+    @if (loading) {
+    <div class="state-message">
+      <span class="loading-spinner"></span>
+      <p>Loading datasets...</p>
+    </div>
+    } @else if (errorMessage) {
+    <div class="state-message error-message" role="alert">
+      <p>{{ errorMessage }}</p>
+      <button type="button" (click)="loadDatasets()">Try again</button>
+    </div>
+    } @else if (filteredDatasets.length === 0) {
+    <div class="state-message">
+      <h3>
+        {{ datasets.length === 0 ? 'No datasets yet' : 'No matching datasets' }}
+      </h3>
+      <p>
+        {{
+            datasets.length === 0
+              ? 'Upload a CSV or Excel file to get started.'
+              : 'Try a different search term or status filter.'
+        }}
+      </p>
+
+      @if (datasets.length === 0) {
+      <a routerLink="/upload" class="primary-button">Upload dataset</a>
+      }
+    </div>
+    } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Format</th>
+            <th>Rows</th>
+            <th>Status</th>
+            <th>Uploaded</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (dataset of filteredDatasets; track dataset.id) {
+          <tr>
+            <td>
+              <div class="dataset-name">
+                <span class="file-icon">▤</span>
+                <div>
+                  <strong>{{ dataset.name }}</strong>
+                  <small>{{ dataset.originalFileName }}</small>
+                </div>
+              </div>
+            </td>
+
+            <td>{{ dataset.fileFormat }}</td>
+            <td>{{ dataset.rowCount | number }}</td>
+
+            <td>
+              <span class="status-badge"
+                    [class.status-ready]="dataset.status.toLowerCase() === 'ready'"
+                    [class.status-uploaded]="dataset.status.toLowerCase() === 'uploaded'">
+                <span class="status-dot"></span>
+                {{ dataset.status }}
+              </span>
+            </td>
+
+            <td>{{ dataset.createdAtUtc | date:'dd MMM yyyy' }}</td>
+
+            <td>
+              <a class="view-link"
+                 [routerLink]="['/datasets', dataset.id]">
+                View details →
+              </a>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-footer">
+      Showing {{ filteredDatasets.length }} of {{ datasets.length }} datasets
+    </div>
+    }
+  </section>
+</section>

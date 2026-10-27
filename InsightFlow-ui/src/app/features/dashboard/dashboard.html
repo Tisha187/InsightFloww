@@ -1,0 +1,205 @@
+
+<div class="dashboard-page">
+  <section class="dashboard-heading">
+    <div>
+      <p class="eyebrow">YOUR WORKSPACE</p>
+      <h1>Good to see you, {{ userName }} <span> ! </span></h1>
+      <p class="subtitle">
+        Here's an overview of your data workspace. Ready to discover something useful?
+      </p>
+    </div>
+
+    <a routerLink="/upload" class="primary-button">
+      <span aria-hidden="true">＋</span> Upload dataset
+    </a>
+  </section>
+
+  @if (errorMessage) {
+  <div class="message error-message" role="alert">
+    <span>{{ errorMessage }}</span>
+    <button type="button" (click)="loadDatasets()">Try again</button>
+  </div>
+  }
+
+  <section class="metrics-grid" aria-label="Dataset statistics">
+    <article class="metric-card">
+      <div class="metric-top">
+        <span class="metric-icon icon-blue">▤</span>
+        <span class="metric-label">Total datasets</span>
+      </div>
+      <p class="metric-value">
+        @if (loading) { <span class="skeleton"> </span> }
+        @else { {{ totalDatasets }} }
+      </p>
+      <p class="metric-note">Datasets in your workspace</p>
+    </article>
+
+    <article class="metric-card">
+      <div class="metric-top">
+        <span class="metric-icon icon-green">✓</span>
+        <span class="metric-label">Ready to explore</span>
+      </div>
+      <p class="metric-value">
+        @if (loading) { <span class="skeleton"> </span> }
+        @else { {{ readyDatasets }} }
+      </p>
+      <p class="metric-note">Successfully processed datasets</p>
+    </article>
+
+    <article class="metric-card">
+      <div class="metric-top">
+        <span class="metric-icon icon-orange">↗</span>
+        <span class="metric-label">Awaiting processing</span>
+      </div>
+      <p class="metric-value">
+        @if (loading) { <span class="skeleton"> </span> }
+        @else { {{ uploadedDatasets }} }
+      </p>
+      <p class="metric-note">Uploaded datasets</p>
+    </article>
+
+    <article class="metric-card">
+      <div class="metric-top">
+        <span class="metric-icon icon-purple">▦</span>
+        <span class="metric-label">Total rows</span>
+      </div>
+      <p class="metric-value">
+        @if (loading) { <span class="skeleton"> </span> }
+        @else { {{ totalRows | number }} }
+      </p>
+      <p class="metric-note">Rows across your datasets</p>
+    </article>
+  </section>
+
+  <section class="workspace-grid">
+    <article class="panel recent-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">YOUR DATA</p>
+          <h2>Recent datasets</h2>
+          <p class="panel-description">
+            Pick up where you left off.
+          </p>
+        </div>
+        <a routerLink="/datasets" class="text-link">View all <span>→</span></a>
+      </div>
+
+      @if (loading) {
+      <div class="empty-state">
+        <span class="loading-spinner"></span>
+        <p>Loading your datasets...</p>
+      </div>
+      } @else if (!errorMessage && datasets.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">▤</div>
+        <h3>Your workspace is ready</h3>
+        <p>Upload your first CSV or Excel dataset to get started.</p>
+        <a routerLink="/upload" class="primary-button">Upload your first dataset</a>
+      </div>
+      } @else if (datasets.length > 0) {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>Rows</th>
+              <th>Status</th>
+              <th>Uploaded</th>
+              <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (dataset of datasets.slice(0, 5); track dataset.id) {
+            <tr>
+              <td>
+                <div class="dataset-name-cell">
+                  <span class="file-icon">▤</span>
+                  <div class="dataset-name-text">
+                    <strong>{{ dataset.name }}</strong>
+                    <span>{{ dataset.originalFileName }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>{{ dataset.rowCount | number }}</td>
+              <td>
+                <span class="status-badge"
+                      [class.status-ready]="dataset.status.toLowerCase() === 'ready'"
+                      [class.status-uploaded]="dataset.status.toLowerCase() === 'uploaded'">
+                  <span class="status-dot"></span>
+                  {{ dataset.status }}
+                </span>
+              </td>
+              <td>{{ dataset.createdAtUtc | date:'dd MMM yyyy' }}</td>
+              <td>
+                <a class="row-action"
+                   [routerLink]="['/datasets']"
+                   [queryParams]="{ id: dataset.id }"
+                   [attr.aria-label]="'View ' + dataset.name">View →</a>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+
+      @if (!loading && datasets.length > 5) {
+      <div class="panel-footer">
+        Showing 5 recent datasets
+        <a routerLink="/datasets" class="text-link">See all datasets →</a>
+      </div>
+      }
+    </article>
+
+    <aside class="panel quick-actions-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">GET STARTED</p>
+          <h2>Quick actions</h2>
+          <p class="panel-description">What would you like to do next?</p>
+        </div>
+      </div>
+
+      <a routerLink="/upload" class="action-item">
+        <span class="action-icon icon-blue">↑</span>
+        <span class="action-copy">
+          <strong>Upload dataset</strong>
+          <span>Import CSV or Excel files</span>
+        </span>
+        <span class="action-arrow">→</span>
+      </a>
+
+      <a routerLink="/datasets" class="action-item">
+        <span class="action-icon icon-green">▤</span>
+        <span class="action-copy">
+          <strong>Explore datasets</strong>
+          <span>Browse your uploaded data</span>
+        </span>
+        <span class="action-arrow">→</span>
+      </a>
+
+      <a routerLink="/analytics" class="action-item">
+        <span class="action-icon icon-purple">▥</span>
+        <span class="action-copy">
+          <strong>View analytics</strong>
+          <span>Explore summaries and trends</span>
+        </span>
+        <span class="action-arrow">→</span>
+      </a>
+
+      <a routerLink="/ai-analyst" class="action-item">
+        <span class="action-icon icon-teal">✧</span>
+        <span class="action-copy">
+          <strong>Ask AI Analyst</strong>
+          <span>Discover insights with AI</span>
+        </span>
+        <span class="action-arrow">→</span>
+      </a>
+    </aside>
+  </section>
+
+  <footer class="dashboard-footer">
+    <span>InsightFlow AI</span>
+    <span>Turn data into direction.</span>
+  </footer>
+</div>

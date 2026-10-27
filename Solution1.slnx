@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="InsightFlow.Api/InsightFlow.Api.csproj" Id="ced24527-2e84-45a3-bf4f-cfe9ea4cd391" />
+  <Project Path="InsightFlow.Core/InsightFlow.Core.csproj" Id="b6c5cb09-164e-4352-ad02-a7127de11af9" />
+</Solution>

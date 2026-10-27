@@ -1,0 +1,143 @@
+
+<section class="upload-page">
+  <a routerLink="/datasets" class="back-link">← Back to datasets</a>
+
+  <header class="page-heading">
+    <p class="eyebrow">DATA MANAGEMENT</p>
+    <h1>Upload a dataset</h1>
+    <p class="subtitle">
+      Bring your CSV or Excel data into InsightFlow AI to start exploring it.
+    </p>
+  </header>
+
+  @if (successMessage && uploadedDataset) {
+  <section class="result-card success-card" role="status">
+    <div class="result-icon">✓</div>
+    <h2>Upload successful!</h2>
+    <p>{{ successMessage }}</p>
+
+    <div class="uploaded-info">
+      <div>
+        <span>Dataset name</span>
+        <strong>{{ uploadedDataset.name }}</strong>
+      </div>
+      <div>
+        <span>Original file</span>
+        <strong>{{ uploadedDataset.originalFileName }}</strong>
+      </div>
+      <div>
+        <span>Status</span>
+        <strong>{{ uploadedDataset.status }}</strong>
+      </div>
+    </div>
+
+    <p class="processing-note">
+      Your file is uploaded. Further processing may be required before
+      analysis becomes available.
+    </p>
+
+    <div class="result-actions">
+      <button class="primary-button" (click)="viewUploadedDataset()">
+        View dataset →
+      </button>
+      <button class="secondary-button" (click)="viewAllDatasets()">
+        View all datasets
+      </button>
+    </div>
+  </section>
+  } @else {
+  <section class="upload-card">
+    <div class="section-heading">
+      <h2>Dataset information</h2>
+      <p>Choose a file and give your dataset a recognizable name.</p>
+    </div>
+
+    <div class="field-group">
+      <label for="datasetName">Dataset name <span>*</span></label>
+      <input id="datasetName"
+             type="text"
+             [(value)]="datasetName"
+             (input)="datasetName = $any($event.target).value"
+             placeholder="e.g. Q1 Sales Data"
+             maxlength="150"
+             [disabled]="uploading" />
+      <small>This name will appear in your InsightFlow workspace.</small>
+    </div>
+
+    <div class="field-group">
+      <label>Data file <span>*</span></label>
+
+      <div class="drop-zone"
+           [class.dragging]="isDragging"
+           [class.has-file]="selectedFile"
+           (dragover)="$event.preventDefault(); isDragging = true"
+           (dragleave)="isDragging = false"
+           (drop)="onDrop($event)">
+        @if (!selectedFile) {
+        <div class="upload-icon">↑</div>
+        <h3>Drop your file here</h3>
+        <p>or select a file from your computer</p>
+
+        <label for="fileInput" class="secondary-button choose-button">
+          Choose file
+        </label>
+
+        <input id="fileInput"
+               class="file-input"
+               type="file"
+               accept=".csv,.xlsx"
+               (change)="onFileSelected($event)"
+               [disabled]="uploading" />
+
+        <small>Supported formats: CSV and XLSX · Maximum 50 MB</small>
+        } @else {
+        <div class="selected-file">
+          <div class="file-icon">▤</div>
+          <div class="file-details">
+            <strong>{{ selectedFile.name }}</strong>
+            <span>{{ formatFileSize(selectedFile.size) }}</span>
+          </div>
+
+          <button type="button"
+                  class="remove-button"
+                  (click)="removeFile()"
+                  [disabled]="uploading"
+                  aria-label="Remove selected file">
+            ✕
+          </button>
+        </div>
+
+        <label for="fileInput" class="secondary-button choose-button">
+          Choose another file
+        </label>
+
+        <input id="fileInput"
+               class="file-input"
+               type="file"
+               accept=".csv,.xlsx"
+               (change)="onFileSelected($event)"
+               [disabled]="uploading" />
+        }
+      </div>
+    </div>
+
+    @if (errorMessage) {
+    <div class="message error-message" role="alert">
+      {{ errorMessage }}
+    </div>
+    }
+
+    <button type="button"
+            class="primary-button upload-button"
+            (click)="uploadDataset()"
+            [disabled]="uploading">
+      @if (uploading) {
+      <span class="loading-spinner"></span>
+      Uploading...
+      } @else {
+      ↑ Upload dataset
+      }
+    </button>
+  </section>
+  }
+</section>

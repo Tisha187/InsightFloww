@@ -1,0 +1,187 @@
+
+<div class="register-page">
+  <section class="register-visual">
+    <a class="brand" routerLink="/" aria-label="InsightFlow AI home">
+      <span class="brand-mark">IF</span>
+      <span>
+        InsightFlow<span class="brand-ai"> AI</span>
+      </span>
+    </a>
+
+    <div class="visual-content">
+      <span class="eyebrow">YOUR DATA. YOUR DISCOVERIES.</span>
+
+      <h1>
+        Start with data.<br />
+        Discover <span>what's possible.</span>
+      </h1>
+
+      <p>
+        Create your InsightFlow AI account and bring your sales data
+        into a workspace designed for clearer insights.
+      </p>
+
+      <div class="benefit-list">
+        <div>
+          <span class="benefit-check">✓</span>
+          Upload CSV and Excel datasets
+        </div>
+        <div>
+          <span class="benefit-check">✓</span>
+          Explore dataset profiles and summaries
+        </div>
+        <div>
+          <span class="benefit-check">✓</span>
+          Work toward smarter, data-driven decisions
+        </div>
+      </div>
+    </div>
+
+    <div class="visual-bottom">
+      INSIGHTFLOW AI · YOUR ANALYTICS WORKSPACE
+    </div>
+  </section>
+
+  <section class="register-panel">
+    <div class="mobile-brand">
+      <span class="brand-mark">IF</span>
+      <span>
+        InsightFlow<span class="brand-ai"> AI</span>
+      </span>
+    </div>
+
+    <div class="register-card">
+      <span class="eyebrow form-eyebrow">GET STARTED</span>
+
+      <h2>Create your account</h2>
+      <p class="subtitle">
+        Set up your workspace to start exploring your data.
+      </p>
+
+      <div class="error-message"
+           *ngIf="errorMessage"
+           role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <div class="success-message"
+           *ngIf="successMessage"
+           role="status">
+        {{ successMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()"
+            #registerForm="ngForm">
+        <div class="form-group">
+          <label for="userName">Username</label>
+          <input id="userName"
+                 name="userName"
+                 type="text"
+                 [(ngModel)]="userName"
+                 #usernameField="ngModel"
+                 placeholder="Choose a username"
+                 autocomplete="username"
+                 minlength="3"
+                 maxlength="50"
+                 required />
+
+          <small class="field-error"
+                 *ngIf="usernameField.touched && usernameField.errors?.['required']">
+            Username is required.
+          </small>
+
+          <small class="field-error"
+                 *ngIf="usernameField.touched && usernameField.errors?.['minlength']">
+            Username must contain at least 3 characters.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input id="email"
+                 name="email"
+                 type="email"
+                 [(ngModel)]="email"
+                 #emailField="ngModel"
+                 placeholder="you@example.com"
+                 autocomplete="email"
+                 email
+                 required />
+
+          <small class="field-error"
+                 *ngIf="emailField.touched && emailField.errors?.['required']">
+            Email address is required.
+          </small>
+
+          <small class="field-error"
+                 *ngIf="emailField.touched && emailField.errors?.['email']">
+            Enter a valid email address.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password"
+                 name="password"
+                 type="password"
+                 [(ngModel)]="password"
+                 #passwordField="ngModel"
+                 placeholder="Create a password"
+                 autocomplete="new-password"
+                 minlength="8"
+                 required />
+
+          <small class="field-error"
+                 *ngIf="passwordField.touched && passwordField.errors?.['required']">
+            Password is required.
+          </small>
+
+          <small class="field-error"
+                 *ngIf="passwordField.touched && passwordField.errors?.['minlength']">
+            Password must contain at least 8 characters.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password</label>
+          <input id="confirmPassword"
+                 name="confirmPassword"
+                 type="password"
+                 [(ngModel)]="confirmPassword"
+                 #confirmPasswordField="ngModel"
+                 placeholder="Enter your password again"
+                 autocomplete="new-password"
+                 required />
+
+          <small class="field-error"
+                 *ngIf="confirmPasswordField.touched && !confirmPassword">
+            Please confirm your password.
+          </small>
+
+          <small class="field-error"
+                 *ngIf="confirmPassword && password !== confirmPassword">
+            Passwords do not match.
+          </small>
+        </div>
+
+        <button class="submit-button"
+                type="submit"
+                [disabled]="loading || registerForm.invalid || password !== confirmPassword">
+          <span *ngIf="!loading">
+            Create account <span aria-hidden="true">→</span>
+          </span>
+          <span *ngIf="loading">Creating account...</span>
+        </button>
+      </form>
+
+      <p class="login-prompt">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </p>
+
+      <p class="security-note">
+        Your workspace is private to your account.
+      </p>
+    </div>
+  </section>
+</div>

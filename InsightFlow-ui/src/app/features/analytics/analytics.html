@@ -1,0 +1,145 @@
+
+<div class="analytics-page">
+  <div class="page-header">
+    <div>
+      <h1>Analytics</h1>
+      <p>Explore insights from your uploaded datasets.</p>
+    </div>
+  </div>
+
+  <!-- Loading datasets -->
+  <div *ngIf="datasetsLoading" class="message">
+    Loading your datasets...
+  </div>
+
+  <!-- Dataset loading errors -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <ng-container *ngIf="!datasetsLoading && !errorMessage">
+
+    <!-- No datasets available -->
+    <div *ngIf="readyDatasets.length === 0" class="empty-state">
+      <h3>No datasets available</h3>
+      <p>Upload a ready dataset to start exploring your analytics.</p>
+    </div>
+
+    <ng-container *ngIf="readyDatasets.length > 0">
+
+      <!-- Dataset selector -->
+      <div class="dataset-selector">
+        <label for="dataset">Select dataset</label>
+
+        <select id="dataset"
+                [(ngModel)]="selectedDatasetId"
+                (ngModelChange)="onDatasetChange()">
+          <option *ngFor="let dataset of readyDatasets"
+                  [value]="dataset.id">
+            {{ dataset.name || dataset.originalFileName }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Summary loading -->
+      <div *ngIf="summaryLoading" class="message">
+        Loading analytics...
+      </div>
+
+      <!-- Summary errors -->
+      <div *ngIf="summaryError" class="error-message">
+        {{ summaryError }}
+      </div>
+
+      <!-- Analytics content -->
+      <ng-container *ngIf="summary && !summaryLoading">
+
+        <!-- KPI cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <p>Total Rows</p>
+            <h2>{{ summary.totalRows | number }}</h2>
+          </div>
+
+          <div class="kpi-card">
+            <p>Total Columns</p>
+            <h2>{{ summary.totalColumns | number }}</h2>
+          </div>
+        </div>
+
+        <!-- Dataset composition chart -->
+        <div class="chart-card">
+          <h3>Dataset Composition</h3>
+
+          <p class="chart-description">
+            Distribution of detected column types.
+          </p>
+
+          <div class="chart-container">
+            <canvas baseChart
+                    [type]="'doughnut'"
+                    [data]="compositionChartData"
+                    [options]="compositionChartOptions"></canvas>
+          </div>
+        </div>
+
+        <!-- Category breakdown chart -->
+        <div class="chart-card">
+          <h3>Category Breakdown</h3>
+
+          <ng-container *ngIf="
+                        summary.categoryBreakdowns?.length>
+            0 &&
+            categoryChartData.labels.length > 0;
+            else noCategoryData
+            "
+            >
+            <p class="chart-description">
+              Records by category in
+              {{ summary.categoryBreakdowns[0].columnName }}
+            </p>
+
+            <div class="chart-container">
+              <canvas baseChart
+                      [type]="'bar'"
+                      [data]="categoryChartData"
+                      [options]="categoryChartOptions"></canvas>
+            </div>
+          </ng-container>
+
+          <ng-template #noCategoryData>
+            <p class="empty-chart">
+              No category breakdown is available for this dataset.
+            </p>
+          </ng-template>
+        </div>
+
+        <!-- Dataset information -->
+        <div class="chart-card">
+          <h3>Dataset Information</h3>
+
+          <p>
+            <strong>Dataset:</strong>
+            {{ selectedDataset?.name || selectedDataset?.originalFileName || 'No dataset selected' }}
+          </p>
+
+          <p>
+            <strong>File format:</strong>
+            {{ selectedDataset?.fileFormat || 'Unknown' }}
+          </p>
+
+          <p>
+            <strong>Numeric columns detected:</strong>
+            {{ summary.numericColumns?.length ?? 0 }}
+          </p>
+
+          <p>
+            <strong>Time-series points:</strong>
+            {{ summary.timeSeries?.length ?? 0 }}
+          </p>
+        </div>
+
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>

@@ -1,0 +1,94 @@
+
+<div class="login-page">
+  <section class="login-visual">
+    <a class="brand" routerLink="/">
+      <span class="brand-mark">IF</span>
+      <span>InsightFlow<span class="brand-ai"> AI</span></span>
+    </a>
+
+    <div class="visual-content">
+      <span class="eyebrow">INTELLIGENCE FOR BETTER DECISIONS</span>
+
+      <h1>Your data.<br />Deeper insights.<br /><span>Smarter decisions.</span></h1>
+
+      <p>
+        Turn your sales data into meaningful insights and make
+        confident, data-driven decisions.
+      </p>
+
+      <div class="visual-footer">
+        <span class="status-dot"></span>
+        Analytics designed around your data
+      </div>
+    </div>
+
+    <div class="visual-bottom">INSIGHTFLOW AI · YOUR ANALYTICS WORKSPACE</div>
+  </section>
+
+  <section class="login-panel">
+    <div class="mobile-brand">
+      <span class="brand-mark">IF</span>
+      <span>InsightFlow<span class="brand-ai"> AI</span></span>
+    </div>
+
+    <div class="login-card">
+      <span class="eyebrow form-eyebrow">WELCOME BACK</span>
+      <h2>Sign in to your account</h2>
+      <p class="subtitle">Enter your credentials to continue to InsightFlow.</p>
+
+      <div class="error-message" *ngIf="errorMessage" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="userName">Username</label>
+          <input id="userName"
+                 name="userName"
+                 type="text"
+                 [(ngModel)]="userName"
+                 #usernameField="ngModel"
+                 placeholder="Enter your username"
+                 autocomplete="username"
+                 required />
+          <small class="field-error"
+                 *ngIf="usernameField.invalid && usernameField.touched">
+            Username is required.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password"
+                 name="password"
+                 type="password"
+                 [(ngModel)]="password"
+                 #passwordField="ngModel"
+                 placeholder="Enter your password"
+                 autocomplete="current-password"
+                 required />
+          <small class="field-error"
+                 *ngIf="passwordField.invalid && passwordField.touched">
+            Password is required.
+          </small>
+        </div>
+
+        <button class="submit-button"
+                type="submit"
+                [disabled]="loading || loginForm.invalid">
+          <span *ngIf="!loading">Sign in <span aria-hidden="true">→</span></span>
+          <span *ngIf="loading">Signing in...</span>
+        </button>
+      </form>
+
+      <p class="register-prompt">
+        Don't have an account?
+        <a routerLink="/register">Create an account</a>
+      </p>
+
+      <p class="security-note">
+        Your workspace is private to your account.
+      </p>
+    </div>
+  </section>
+</div>

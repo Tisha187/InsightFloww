@@ -1,0 +1,109 @@
+@if (isAuthPage()) {
+<main class="auth-content">
+  <router-outlet />
+</main>
+} @else {
+<div class="app-shell">
+  <header class="topbar">
+    <div class="navbar-inner">
+      <a class="brand"
+         routerLink="/dashboard"
+         aria-label="InsightFlow AI home"
+         (click)="closeMenu()">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18" />
+            <path d="m7 14 4-4 4 3 5-7" />
+            <path d="M16 6h4v4" />
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <span class="brand-name">InsightFlow <span class="brand-ai">AI</span></span>
+          <span class="brand-subtitle">Intelligent Analytics</span>
+        </span>
+      </a>
+
+      <button class="mobile-menu-toggle"
+              type="button"
+              [class.is-open]="menuOpen()"
+              [attr.aria-expanded]="menuOpen()"
+              aria-controls="primary-navigation"
+              [attr.aria-label]="menuOpen() ? 'Close navigation' : 'Open navigation'"
+              (click)="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="primary-navigation"
+           class="navigation"
+           [class.navigation-open]="menuOpen()"
+           aria-label="Main navigation">
+        <a routerLink="/dashboard" routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Dashboard</a>
+        <a routerLink="/datasets" routerLinkActive="active" (click)="closeMenu()">Datasets</a>
+        <a routerLink="/upload" routerLinkActive="active" (click)="closeMenu()">Upload</a>
+        <a routerLink="/analytics" routerLinkActive="active" (click)="closeMenu()">Analytics</a>
+        <a routerLink="/ai-analyst" routerLinkActive="active" (click)="closeMenu()">
+          AI Analyst <span class="nav-badge">AI</span>
+        </a>
+        <a routerLink="/forecasting" routerLinkActive="active" (click)="closeMenu()">Forecasting</a>
+
+
+      </nav>
+
+     
+
+      <div class="navbar-actions">
+        <div class="account-menu-container">
+          <button type="button"
+                  class="account-trigger"
+                  (click)="toggleAccountMenu()"
+                  [attr.aria-expanded]="accountMenuOpen"
+                  aria-label="Open account information">
+            <span class="account-avatar">{{ userInitial }}</span>
+
+            <span class="account-name">{{ userName }}</span>
+
+            <span class="account-chevron">
+              {{ accountMenuOpen ? '▲' : '▼' }}
+            </span>
+          </button>
+
+
+          @if (accountMenuOpen) {
+          <div class="account-dropdown">
+            <div class="account-dropdown-header">
+              <span class="account-avatar">{{ userInitial }}</span>
+
+              <div>
+                <strong>{{ userName }}</strong>
+                <p>InsightFlow account</p>
+              </div>
+            </div>
+
+            <div class="account-detail">
+              <span>Username</span>
+              <strong>{{ userName }}</strong>
+            </div>
+
+            <div class="account-dropdown-divider"></div>
+
+            <button type="button"
+                    class="account-logout"
+                    (click)="logout()">
+              <span aria-hidden="true">↪</span>
+              Logout
+            </button>
+          </div>
+          }
+
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <router-outlet />
+  </main>
+</div>
+}

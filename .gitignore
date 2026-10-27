@@ -1,0 +1,28 @@
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Angular dependencies and build output
+**/node_modules/
+**/dist/
+**/.angular/
+
+# IDE files
+.vs/
+.vscode/
+
+# Local configuration and secrets
+**/appsettings.Local.json
+**/appsettings.Development.json
+**/appsettings.json
+**/appsettings.*.json
+**/.env
+**/.env.*
+
+# Keep database scripts and sample datasets local for now
+Database_insightFlow.sql
+Sample Datasets/
+
+# Local dataset and storage files
+InsightFlowStorage/

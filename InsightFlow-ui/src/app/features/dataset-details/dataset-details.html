@@ -1,0 +1,119 @@
+<section class="details-page">
+  <a routerLink="/datasets" class="back-link">← Back to datasets</a>
+
+  @if (loading) {
+  <div class="state-card">
+    <span class="loading-spinner"></span>
+    <p>Loading dataset details...</p>
+  </div>
+  } @else if (errorMessage) {
+  <div class="state-card error-state" role="alert">
+    <h2>Unable to open dataset</h2>
+    <p>{{ errorMessage }}</p>
+    <a routerLink="/datasets" class="primary-button">Return to datasets</a>
+  </div>
+  } @else if (dataset) {
+  <header class="details-heading">
+    <div>
+      <p class="eyebrow">DATASET DETAILS</p>
+      <h1>{{ dataset.name }}</h1>
+      <p class="subtitle">{{ dataset.originalFileName }}</p>
+    </div>
+
+    <span class="status-badge"
+          [class.status-ready]="dataset.status.toLowerCase() === 'ready'"
+          [class.status-uploaded]="dataset.status.toLowerCase() === 'uploaded'">
+      <span class="status-dot"></span>
+      {{ dataset.status }}
+    </span>
+  </header>
+
+  <section class="metadata-grid">
+    <article class="metadata-card">
+      <span>File format</span>
+      <strong>{{ dataset.fileFormat }}</strong>
+    </article>
+
+    <article class="metadata-card">
+      <span>Total rows</span>
+      <strong>{{ dataset.rowCount | number }}</strong>
+    </article>
+
+    <article class="metadata-card">
+      <span>Uploaded on</span>
+      <strong>{{ dataset.createdAtUtc | date:'dd MMM yyyy' }}</strong>
+    </article>
+  </section>
+
+  <section class="preview-panel">
+    <header class="preview-heading">
+      <div>
+        <p class="eyebrow">EXPLORE YOUR DATA</p>
+        <h2>Data preview</h2>
+        <p class="subtitle">
+          Inspect sample rows from your uploaded dataset.
+        </p>
+      </div>
+
+      <label class="row-selector">
+        Preview rows
+        <select [value]="previewLimit"
+                (change)="changePreviewLimit($any($event.target).value)">
+          <option value="5">5 rows</option>
+          <option value="10">10 rows</option>
+          <option value="25">25 rows</option>
+          <option value="50">50 rows</option>
+        </select>
+      </label>
+    </header>
+
+    @if (previewLoading) {
+    <div class="state-card">
+      <span class="loading-spinner"></span>
+      <p>Loading preview...</p>
+    </div>
+    } @else if (previewError) {
+    <div class="state-card error-state" role="alert">
+      <p>{{ previewError }}</p>
+      <button type="button" class="primary-button" (click)="loadPreview()">
+        Retry preview
+      </button>
+    </div>
+    } @else if (preview) {
+    <div class="preview-summary">
+      Showing {{ preview.returnedRows }} of
+      {{ preview.totalRows | number }} rows
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            @for (column of preview.columns; track column) {
+            <th>{{ column }}</th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (row of preview.rows; track $index) {
+          <tr>
+            @for (cell of row; track $index) {
+            <td>{{ cell }}</td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (preview.totalRows > preview.returnedRows) {
+    <p class="preview-note">
+      This is a sample of your data. The full dataset contains
+      {{ preview.totalRows | number }} rows.
+    </p>
+    }
+    }
+  </section>
+  }
+</section>
