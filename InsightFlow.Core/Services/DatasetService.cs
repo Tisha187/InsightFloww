@@ -247,5 +247,44 @@ public class DatasetService : IDatasetService
     }
 
 
+    public async Task<DatasetPreviewResult> GetDatasetRowsAsync(
+        Guid datasetId,
+        string userId)
+    {
+        ValidateUserId(userId);
+
+        var dataset = await _repository.GetByIdAsync(datasetId, userId);
+
+        if (dataset is null)
+        {
+            throw new KeyNotFoundException(
+                "Dataset not found or does not belong to this user.");
+        }
+
+        if (!string.Equals(
+            dataset.Status,
+            "Ready",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                "The dataset must be processed before forecasting is available.");
+        }
+
+        await using var stream =
+            await _fileStorage.OpenReadAsync(dataset.StorageKey);
+
+        if (stream is null)
+        {
+            throw new FileNotFoundException(
+                "The stored dataset file could not be found.");
+        }
+
+        return await _datasetReader.ReadAllRowsAsync(
+            stream,
+            dataset.FileFormat);
+    }
+
+
+
 
 }

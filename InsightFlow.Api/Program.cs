@@ -2,6 +2,7 @@ using InsightFlow.Core.Authentication;
 using InsightFlow.Core.Models;
 using InsightFlow.Core.Repositories;
 using InsightFlow.Core.Services;
+using InsightFlow.Core.Services.Forecasting;
 using InsightFlow.Core.Storage;
 using InsightFlow.Core.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -113,6 +114,31 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+builder.Services.AddScoped<IDatasetService, DatasetService>();
+
+builder.Services.AddHttpClient<
+    IForecastingClient,
+    ForecastingClient>(client =>
+    {
+        var baseUrl = builder.Configuration["ForecastingService:BaseUrl"]
+            ?? throw new InvalidOperationException(
+                "Forecasting service URL is missing.");
+
+        client.BaseAddress = new Uri(baseUrl);
+        client.Timeout = TimeSpan.FromSeconds(120);
+    });
+
+builder.Services.AddScoped<IDatasetService, DatasetService>();
+
+builder.Services.AddScoped<IDatasetRepository, DatasetRepository>();
+
+builder.Services.AddScoped<
+    IForecastRepository,
+    ForecastRepository>();
+
+builder.Services.AddScoped<
+    InsightFlow.Core.Services.Forecasting.ForecastingService>();
 
 
 var app = builder.Build();

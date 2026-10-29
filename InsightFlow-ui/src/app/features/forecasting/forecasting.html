@@ -1,0 +1,274 @@
+
+<div class="forecasting-page">
+  <div class="page-header">
+    <div>
+      <h1>Forecasting</h1>
+      <p>Predict future performance using your historical dataset.</p>
+    </div>
+  </div>
+
+  <!-- Dataset loading -->
+  <div *ngIf="datasetsLoading" class="message">
+    Loading your datasets...
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <ng-container *ngIf="!datasetsLoading && !errorMessage">
+
+    <div *ngIf="readyDatasets.length === 0" class="empty-state">
+      <h3>No datasets available</h3>
+      <p>Upload and process a dataset before generating forecasts.</p>
+    </div>
+
+    <ng-container *ngIf="readyDatasets.length > 0">
+
+      <!-- Forecast configuration -->
+      <div class="chart-card">
+        <h3>Configure forecast</h3>
+        <p class="chart-description">
+          Choose a dataset and forecasting settings.
+          Leave the column and frequency fields blank to use automatic detection.
+        </p>
+
+        <div class="configuration-grid">
+          <div class="form-field">
+            <label for="forecast-dataset">Dataset</label>
+            <select id="forecast-dataset"
+                    [(ngModel)]="selectedDatasetId"
+                    (ngModelChange)="onDatasetChange()">
+              <option *ngFor="let dataset of readyDatasets"
+                      [value]="dataset.id">
+                {{ dataset.name || dataset.originalFileName }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="date-column">Date column (optional)</label>
+            <input id="date-column"
+                   type="text"
+                   [(ngModel)]="dateColumn"
+                   placeholder="e.g. Date" />
+          </div>
+
+          <div class="form-field">
+            <label for="target-column">Target column (optional)</label>
+            <input id="target-column"
+                   type="text"
+                   [(ngModel)]="targetColumn"
+                   placeholder="e.g. Revenue" />
+          </div>
+
+          <div class="form-field">
+            <label for="frequency">Frequency</label>
+            <select id="frequency" [(ngModel)]="frequency">
+              <option value="">Auto-detect</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Yearly">Yearly</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="horizon">Forecast horizon</label>
+            <input id="horizon"
+                   type="number"
+                   min="1"
+                   max="365"
+                   [(ngModel)]="horizon" />
+            <small>Number of future periods, from 1 to 365.</small>
+          </div>
+        </div>
+
+        <button type="button"
+                class="primary-button"
+                (click)="generateForecast()"
+                [disabled]="forecastingLoading || !selectedDatasetId">
+          {{ forecastingLoading ? 'Generating forecast...' : 'Generate forecast' }}
+        </button>
+
+        <div *ngIf="forecastError" class="error-message">
+          {{ forecastError }}
+        </div>
+      </div>
+
+      <!-- Forecast result -->
+      <div class="chart-card">
+        <h3>Forecast results</h3>
+
+        <div *ngIf="forecastingLoading" class="message">
+          Analysing your historical data and generating predictions...
+        </div>
+
+        <div *ngIf="detailsLoading" class="message">
+          Loading saved forecast...
+        </div>
+
+        <div *ngIf="detailsError" class="error-message">
+          {{ detailsError }}
+        </div>
+
+        <ng-container *ngIf="selectedRun && !detailsLoading">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <p>Selected model</p>
+              <h2>{{ selectedRun.modelVersion || 'N/A' }}</h2>
+            </div>
+
+            <div class="kpi-card">
+              <p>Forecast periods</p>
+              <h2>{{ selectedRun.horizon }}</h2>
+            </div>
+
+            <div class="kpi-card">
+              <p>Frequency</p>
+              <h2>{{ selectedRun.frequency }}</h2>
+            </div>
+          </div>
+
+          <p class="chart-description">
+            Target: {{ selectedRun.targetColumn }}
+            · Date column: {{ selectedRun.dateColumn }}
+          </p>
+
+          <div class="chart-container">
+            <canvas baseChart
+                    [type]="'line'"
+                    [data]="forecastChartData"
+                    [options]="forecastChartOptions"></canvas>
+          </div>
+
+          <h3 class="subheading">Model evaluation</h3>
+
+          <div *ngIf="selectedRun.metrics as metrics">
+            <p class="chart-description">
+              Evaluation holdout observations: {{ metrics.holdoutObservations }}
+            </p>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>MAE</th>
+                    <th>RMSE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let entry of metrics.models | keyvalue">
+                    <td>{{ entry.key }}</td>
+                    <td>{{ entry.value.mae | number:'1.2-2' }}</td>
+                    <td>{{ entry.value.rmse | number:'1.2-2' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h3 class="subheading">Predicted values</h3>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Forecast date</th>
+                  <th>Predicted value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let point of selectedRun.forecasts">
+                  <td>{{ point.date | date:'mediumDate' }}</td>
+                  <td>{{ point.predicted | number:'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+
+        <div *ngIf="!selectedRun && !forecastingLoading && !detailsLoading"
+             class="empty-chart">
+          Generate a forecast or select a previous run from the history below.
+        </div>
+      </div>
+
+      <!-- Forecast history -->
+      <div class="chart-card">
+        <div class="section-heading">
+          <div>
+            <h3>Forecast history</h3>
+            <p class="chart-description">
+              Previously generated forecasts for the selected dataset.
+            </p>
+          </div>
+
+          <button type="button"
+                  class="secondary-button"
+                  (click)="loadHistory()"
+                  [disabled]="historyLoading">
+            Refresh
+          </button>
+        </div>
+
+        <div *ngIf="historyLoading" class="message">
+          Loading forecast history...
+        </div>
+
+        <div *ngIf="historyError" class="error-message">
+          {{ historyError }}
+        </div>
+
+        <div *ngIf="!historyLoading && history.length === 0 && !historyError"
+             class="empty-chart">
+          No forecast runs found for this dataset yet.
+        </div>
+
+        <div *ngIf="history.length > 0"
+             class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Created</th>
+                <th>Target</th>
+                <th>Model</th>
+                <th>Frequency</th>
+                <th>Horizon</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let run of history">
+                <td>{{ run.createdAtUtc | date:'medium' }}</td>
+                <td>{{ run.targetColumn }}</td>
+                <td>{{ run.modelVersion || 'N/A' }}</td>
+                <td>{{ run.frequency }}</td>
+                <td>{{ run.horizon }}</td>
+                <td>
+                  <span class="status"
+                        [class.status-completed]="run.status === 'Completed'"
+                        [class.status-failed]="run.status === 'Failed'">
+                    {{ run.status }}
+                  </span>
+                </td>
+                <td>
+                  <button type="button"
+                          class="text-button"
+                          (click)="loadRunDetails(run.runId)"
+                          [disabled]="detailsLoading">
+                    View results
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </ng-container>
+  </ng-container>
+</div>

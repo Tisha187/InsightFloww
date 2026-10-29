@@ -1,4 +1,17 @@
+# Python
+forecasting-service/.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
 
+# .NET build outputs
+**/bin/
+**/obj/
+
+# Angular
+**/node_modules/
+**/dist/
 # .NET build output
 **/bin/
 **/obj/
@@ -26,3 +39,7 @@ Sample Datasets/
 
 # Local dataset and storage files
 InsightFlowStorage/
+
+# Allow safe example configuration templates
+!.env.example
+!**/.env.example

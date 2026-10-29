@@ -10,6 +10,7 @@ import { DatasetDetails } from './features/dataset-details/dataset-details';
 import { Upload } from './features/upload/upload';
 import { RouterLink } from '@angular/router';
 import { Analytics } from './features/analytics/analytics';
+import { Forecasting } from './features/forecasting/forecasting';
 
 
 export const routes: Routes = [
@@ -78,7 +79,7 @@ export const routes: Routes = [
   },
   {
     path: 'forecasting',
-    component: PagePlaceholder,
+    component: Forecasting,
     data: {
       title: 'Forecasting',
       eyebrow: 'PREDICTIVE ANALYTICS',

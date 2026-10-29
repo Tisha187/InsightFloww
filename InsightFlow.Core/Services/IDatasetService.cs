@@ -32,6 +32,10 @@ namespace InsightFlow.Core.Services
         Guid datasetId,
         string userId);
 
+        Task<DatasetPreviewResult> GetDatasetRowsAsync(
+        Guid datasetId,
+        string userId);
+
         Task<bool> DeleteDatasetAsync(Guid datasetId, string userId);
 
 
