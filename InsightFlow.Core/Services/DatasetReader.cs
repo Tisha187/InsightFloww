@@ -376,27 +376,136 @@ public sealed class DatasetReader
     }
 
 
+
     private static string? DetectSemanticRole(string columnName)
     {
-        var name = columnName.Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(columnName))
+            return null;
 
-        if (name.Contains("date") || name.Contains("timestamp"))
-            return "Date";
+        // Normalize headers: Order_Date, order-date and OrderDate
+        // all become orderdate.
+        var name = new string(
+            columnName
+                .Where(char.IsLetterOrDigit)
+                .Select(char.ToLowerInvariant)
+                .ToArray());
 
-        if (name.Contains("revenue") || name.Contains("sales"))
-            return "Revenue";
+        return name switch
+        {
+            // Date and time
+            "date" or
+            "orderdate" or
+            "transactiondate" or
+            "salesdate" or
+            "invoicedate" or
+            "purchasedate" or
+            "createddate" or
+            "timestamp" or
+            "datetime" or
+            "orderdatetime" => "Date",
 
-        if (name.Contains("quantity") || name.Contains("units"))
-            return "Quantity";
+            // Revenue and sales
+            "revenue" or
+            "totalrevenue" or
+            "sales" or
+            "totalsales" or
+            "netsales" or
+            "grosssales" or
+            "salesamount" or
+            "salesvalue" or
+            "ordervalue" or
+            "orderamount" or
+            "totalamount" or
+            "netamount" => "Revenue",
 
-        if (name.Contains("product") || name.Contains("item"))
-            return "Product";
+            // Profit
+            "profit" or
+            "totalprofit" or
+            "netprofit" or
+            "grossprofit" or
+            "profitamount" or
+            "profitmargin" => "Profit",
 
-        if (name.Contains("region") || name.Contains("country"))
-            return "Region";
+            // Cost
+            "cost" or
+            "totalcost" or
+            "unitcost" or
+            "productcost" or
+            "costprice" or
+            "purchasecost" => "Cost",
 
-        return null;
+            // Quantity
+            "quantity" or
+            "qty" or
+            "units" or
+            "unitssold" or
+            "quantitysold" or
+            "salesquantity" or
+            "itemquantity" => "Quantity",
+
+            // Unit price
+            "unitprice" or
+            "priceperunit" or
+            "sellingprice" or
+            "sellingpriceperunit" or
+            "productprice" => "UnitPrice",
+
+            // Product
+            "product" or
+            "productname" or
+            "item" or
+            "itemname" or
+            "productid" or
+            "sku" or
+            "skucode" => "Product",
+
+            // Category
+            "category" or
+            "productcategory" or
+            "itemcategory" or
+            "subcategory" or
+            "productsubcategory" => "Category",
+
+            // Geography
+            "region" or
+            "territory" or
+            "country" or
+            "state" or
+            "city" or
+            "location" or
+            "salesregion" or
+            "geography" => "Region",
+
+            // Customer
+            "customer" or
+            "customerid" or
+            "customername" or
+            "client" or
+            "clientid" or
+            "clientname" or
+            "customersegment" or
+            "segment" => "Customer",
+
+            // Transaction
+            "orderid" or
+            "ordernumber" or
+            "invoiceid" or
+            "invoicenumber" or
+            "transactionid" or
+            "transactionnumber" or
+            "billnumber" => "Transaction",
+
+            // Generic identifiers
+            "id" or
+            "identifier" or
+            "recordid" or
+            "referenceid" => "Identifier",
+
+            // Unknown or ambiguous headers
+            _ => null
+        };
     }
+
 }
 
 public sealed class DatasetReadResult

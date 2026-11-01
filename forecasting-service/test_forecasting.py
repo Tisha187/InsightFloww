@@ -1,38 +1,100 @@
 
-from datetime import date
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
-from app.forecasting import forecast_series
+from app.forecasting import (
+    forecast_series,
+    _build_models,
+    SUPPORTED_FREQUENCIES,
+)
+from statsforecast import StatsForecast
 
 
-# Generate 36 months of synthetic revenue data.
-rng = np.random.default_rng(42)
-dates = pd.date_range(start="2023-01-01", periods=36, freq="MS")
-
-# Simulated revenue with an upward trend and recurring monthly variation.
-values = [
-    round(
-        100_000
-        + i * 2_000
-        + 8_000 * np.sin(2 * np.pi * i / 12)
-        + rng.normal(0, 1_500),
-        2,
-    )
-    for i in range(len(dates))
-]
-
-result = forecast_series(
-    dates=[d.date().isoformat() for d in dates],
-    values=values,
-    horizon=6,
-    frequency="Monthly",
+# Load the complex test dataset.
+DATASET_PATH = (
+    Path(__file__).parent.parent
+    / "insightflow_complex_weekly_test_dataset.csv"
 )
 
-print("\n=== FORECAST MODEL ===")
+if not DATASET_PATH.exists():
+    raise FileNotFoundError(
+        f"Test dataset not found: {DATASET_PATH}"
+    )
+
+df = pd.read_csv(DATASET_PATH)
+
+print("\n=== ORIGINAL DATASET ===")
+print("Rows:", len(df))
+print("Columns:", list(df.columns))
+
+
+# Prepare the weekly revenue series.
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+df["Revenue"] = pd.to_numeric(df["Revenue"], errors="coerce")
+
+if df["Date"].isna().any() or df["Revenue"].isna().any():
+    raise ValueError("Dataset contains invalid dates or revenue values.")
+
+historical = (
+    df.groupby("Date", as_index=False)["Revenue"]
+    .sum()
+    .sort_values("Date")
+    .reset_index(drop=True)
+)
+
+print("\n=== AGGREGATED WEEKLY REVENUE ===")
+
+for row in historical.itertuples(index=False):
+    print(f"{row.Date.date()}: {row.Revenue:.2f}")
+
+dates = historical["Date"].dt.strftime("%Y-%m-%d").tolist()
+values = historical["Revenue"].astype(float).tolist()
+
+
+# Run the forecasting engine.
+result = forecast_series(
+    dates=dates,
+    values=values,
+    horizon=6,
+    frequency="Weekly",
+)
+
+print("\n=== INDIVIDUAL MODEL FORECASTS ===")
+
+models = _build_models("Weekly", len(dates))
+
+engine = StatsForecast(
+    models=models,
+    freq=SUPPORTED_FREQUENCIES["Weekly"],
+    n_jobs=1,
+)
+
+individual_forecasts = engine.forecast(
+    df=pd.DataFrame({
+        "unique_id": ["sales"] * len(dates),
+        "ds": pd.to_datetime(dates),
+        "y": values,
+    }),
+    h=6,
+)
+
+for model in models:
+    name = model.__class__.__name__
+
+    print(f"\n{name}:")
+
+    for value in individual_forecasts[name].tolist():
+        print(f"{value:.2f}")
+
+
+print("\n=== SELECTED MODEL ===")
 print(result["modelUsed"])
 
-print("\n=== EVALUATION METRICS ===")
+print("\n=== BACKTESTING METRICS ===")
+print("Evaluation windows:", result["evaluation"]["evaluationWindows"])
+
 for model, metrics in result["evaluation"]["models"].items():
     print(
         f"{model}: "
@@ -40,19 +102,38 @@ for model, metrics in result["evaluation"]["models"].items():
         f"RMSE={metrics['rmse']:.2f}"
     )
 
+
 print("\n=== FUTURE FORECAST ===")
+
 for item in result["forecasts"]:
-    print(f"{item['date']}: {item['predicted']:.2f}")
+    print(
+        f"{item['date']}: "
+        f"{item['predicted']:.2f}"
+    )
+
 
 print("\n=== VALIDATION ===")
-assert len(result["historical"]) == 36
+
+assert len(result["historical"]) == 16
 assert len(result["forecasts"]) == 6
-assert all(np.isfinite(item["predicted"]) for item in result["forecasts"])
-assert all(item["predicted"] >= 0 for item in result["forecasts"])
+
+assert all(
+    np.isfinite(item["predicted"])
+    for item in result["forecasts"]
+)
+
+assert all(
+    item["predicted"] >= 0
+    for item in result["forecasts"]
+)
+
 assert result["modelUsed"] in {
     "AutoETS",
     "AutoARIMA",
     "NaiveBaseline",
+    "HistoricAverage",
+    "RandomWalkWithDrift",
+    "SeasonalNaive",
 }
 
-print("All basic forecast assertions passed.")
+print("All complex dataset assertions passed.")

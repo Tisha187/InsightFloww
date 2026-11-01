@@ -241,9 +241,10 @@ public class DatasetService : IDatasetService
         // The metadata is retrieved from the existing Database First schema.
         // Pass it to the analytics service in the next integration step.
         return _analyticsService.CalculateSummary(
-            dataset.Id,
-            data.Columns,
-            data.Rows);
+        dataset.Id,
+        data.Columns,
+        data.Rows,
+        columnMetadata);
     }
 
 

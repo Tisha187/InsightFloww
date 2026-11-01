@@ -9,6 +9,8 @@ public sealed class DatasetSummaryResult
 
     public int TotalColumns { get; init; }
 
+    public BusinessKpiSummary Kpis { get; init; } = new();
+
     public IReadOnlyList<NumericColumnSummary> NumericColumns { get; init; }
         = Array.Empty<NumericColumnSummary>();
 
@@ -19,9 +21,30 @@ public sealed class DatasetSummaryResult
         = Array.Empty<TimeSeriesPoint>();
 }
 
+public sealed class BusinessKpiSummary
+{
+    public decimal? TotalRevenue { get; init; }
+
+    public decimal? TotalProfit { get; init; }
+
+    public decimal? AverageRevenue { get; init; }
+
+    public decimal? TotalQuantitySold { get; init; }
+
+    public decimal? ProfitMargin { get; init; }
+
+    public long? TotalTransactions { get; init; }
+
+    public decimal? AverageOrderValue { get; init; }
+
+    public long? TotalCustomers { get; init; }
+}
+
 public sealed class NumericColumnSummary
 {
     public string ColumnName { get; init; } = string.Empty;
+
+    public string? SemanticRole { get; init; }
 
     public decimal Sum { get; init; }
 
@@ -34,10 +57,11 @@ public sealed class NumericColumnSummary
     public long ValueCount { get; init; }
 }
 
-
 public sealed class CategoryBreakdown
 {
     public string ColumnName { get; init; } = string.Empty;
+
+    public string? SemanticRole { get; init; }
 
     public IReadOnlyList<CategoryValue> Values { get; init; }
         = Array.Empty<CategoryValue>();
@@ -50,6 +74,8 @@ public sealed class CategoryMeasure
 {
     public string MeasureColumnName { get; init; } = string.Empty;
 
+    public string? SemanticRole { get; init; }
+
     public string CategoryLabel { get; init; } = string.Empty;
 
     public decimal Total { get; init; }
@@ -58,7 +84,6 @@ public sealed class CategoryMeasure
 
     public long ValueCount { get; init; }
 }
-
 
 public sealed class CategoryValue
 {

@@ -45,6 +45,7 @@ export class Analytics implements OnInit {
   summaryError = '';
   summary: any = null;
 
+  // Existing category chart
   categoryChartData: any = {
     labels: [],
     datasets: [{ label: 'Records', data: [] }],
@@ -58,6 +59,7 @@ export class Analytics implements OnInit {
     },
   };
 
+  // Existing composition chart
   compositionChartData: any = {
     labels: [],
     datasets: [
@@ -68,22 +70,124 @@ export class Analytics implements OnInit {
     ],
   };
 
+
   compositionChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    cutout: '65%',
     plugins: {
       legend: {
         display: true,
         position: 'bottom',
+        labels: {
+          color: '#52647d',
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 12,
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: '#173b70',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        padding: 12,
+        cornerRadius: 6,
       },
     },
   };
+
+
+  // 1. Overall average revenue chart
+  overallRevenueChartData: any = {
+    labels: ['Overall Average'],
+    datasets: [
+      {
+        label: 'Average Revenue',
+        data: [],
+      },
+    ],
+  };
+
+  // 2. Average revenue by region
+  regionRevenueChartData: any = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Average Revenue',
+        data: [],
+      },
+    ],
+  };
+
+  // 3. Average revenue by product
+  productRevenueChartData: any = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Average Revenue',
+        data: [],
+      },
+    ],
+  };
+
+
+  revenueChartOptions: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: '#173b70',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        padding: 12,
+        cornerRadius: 6,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        border: {
+          color: '#d5dce8',
+        },
+        ticks: {
+          color: '#68778d',
+          font: {
+            size: 12,
+          },
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: '#e5eaf2',
+          drawBorder: false,
+        },
+        border: {
+          display: false,
+        },
+        ticks: {
+          color: '#68778d',
+          font: {
+            size: 11,
+          },
+        },
+      },
+    },
+  };
+
 
   ngOnInit(): void {
     this.loadDatasets();
   }
 
-  // 1. Load the user's datasets first.
   loadDatasets(): void {
     const token = this.auth.getToken();
 
@@ -109,7 +213,6 @@ export class Analytics implements OnInit {
         const firstReadyDataset = this.readyDatasets[0];
 
         if (firstReadyDataset) {
-          // Set the ID BEFORE calling loadSummary().
           this.selectedDatasetId = firstReadyDataset.id;
           console.log('Selected dataset ID:', this.selectedDatasetId);
           this.loadSummary();
@@ -143,7 +246,6 @@ export class Analytics implements OnInit {
     });
   }
 
-  // 2. Load the summary for the selected dataset.
   loadSummary(): void {
     if (!this.selectedDatasetId) {
       this.summaryError = 'Please select a dataset.';
@@ -164,7 +266,6 @@ export class Analytics implements OnInit {
     this.summaryLoading = true;
     this.summaryError = '';
 
-    // IMPORTANT: no space before the slash.
     const summaryUrl =
       `${this.apiUrl}/${this.selectedDatasetId}/summary`;
 
@@ -177,6 +278,7 @@ export class Analytics implements OnInit {
 
         this.buildCategoryChart();
         this.buildCompositionChart();
+        this.buildRevenueCharts();
 
         this.summaryLoading = false;
         this.cdr.detectChanges();
@@ -250,8 +352,118 @@ export class Analytics implements OnInit {
         {
           label: 'Columns',
           data: [numericCount, categoryCount, otherCount],
+          backgroundColor: [
+            '#173b70',
+            '#2459a9',
+            '#a9b9ce',
+          ],
+          borderColor: '#ffffff',
+          borderWidth: 3,
+          hoverOffset: 5,
         },
       ],
     };
   }
+
+
+
+  buildRevenueCharts(): void {
+    const numericColumns = this.summary?.numericColumns ?? [];
+    const categoryBreakdowns = this.summary?.categoryBreakdowns ?? [];
+
+    const revenueColumn = numericColumns.find(
+      (column: any) =>
+        column.semanticRole?.toLowerCase() === 'revenue'
+    );
+
+    // Overall average revenue
+    this.overallRevenueChartData = {
+      labels: ['Overall Average'],
+      datasets: [
+        {
+          label: 'Average Revenue',
+          data: revenueColumn ? [revenueColumn.average] : [],
+        },
+      ],
+    };
+
+    // Find Region and Product breakdowns
+    const regionBreakdown = categoryBreakdowns.find(
+      (item: any) =>
+        item.semanticRole?.toLowerCase() === 'region'
+    );
+
+    const productBreakdown = categoryBreakdowns.find(
+      (item: any) =>
+        item.semanticRole?.toLowerCase() === 'product'
+    );
+
+    // Average Revenue by Region
+    const regionRevenueMeasures = (
+      regionBreakdown?.measures ?? []
+    ).filter(
+      (measure: any) =>
+        measure.semanticRole?.toLowerCase() === 'revenue'
+    );
+
+    const regionColors = [
+      '#173b70',
+      '#2459a9',
+      '#5278ad',
+      '#7895bd',
+      '#9aafce',
+      '#46658e',
+    ];
+
+    this.regionRevenueChartData = {
+      labels: regionRevenueMeasures.map(
+        (measure: any) => measure.categoryLabel
+      ),
+      datasets: [
+        {
+          label: 'Average Revenue',
+          data: regionRevenueMeasures.map(
+            (measure: any) => measure.average
+          ),
+          backgroundColor: regionRevenueMeasures.map(
+            (_: any, index: number) =>
+              regionColors[index % regionColors.length]
+          ),
+          borderColor: regionRevenueMeasures.map(
+            (_: any, index: number) =>
+              regionColors[index % regionColors.length]
+          ),
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+      ],
+    };
+
+    // Average Revenue by Product
+    const productRevenueMeasures = (
+      productBreakdown?.measures ?? []
+    ).filter(
+      (measure: any) =>
+        measure.semanticRole?.toLowerCase() === 'revenue'
+    );
+
+    this.productRevenueChartData = {
+      labels: productRevenueMeasures.map(
+        (measure: any) => measure.categoryLabel
+      ),
+      datasets: [
+        {
+          label: 'Average Revenue',
+          data: productRevenueMeasures.map(
+            (measure: any) => measure.average
+          ),
+          backgroundColor: '#2459a9',
+          borderColor: '#173b70',
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+      ],
+    };
+  }
+
 }

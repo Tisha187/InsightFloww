@@ -1,18 +1,42 @@
 ﻿
 using System.Globalization;
 using InsightFlow.Core.Analytics;
+using InsightFlow.Core.Models;
 
 namespace InsightFlow.Core.Services;
 
 public sealed class DatasetAnalyticsService
 {
+    private static readonly HashSet<string> MeasureRoles =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Revenue",
+            "Profit",
+            "Cost",
+            "Quantity",
+            "UnitPrice"
+        };
+
+    private static readonly HashSet<string> DimensionRoles =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Customer",
+            "Transaction",
+            "Product",
+            "Category",
+            "Region",
+            "Identifier"
+        };
+
     public DatasetSummaryResult CalculateSummary(
         Guid datasetId,
         IReadOnlyList<string> columns,
-        IReadOnlyList<IReadOnlyList<string>> rows)
+        IReadOnlyList<IReadOnlyList<string>> rows,
+        IReadOnlyList<DatasetColumn> columnMetadata)
     {
         ArgumentNullException.ThrowIfNull(columns);
         ArgumentNullException.ThrowIfNull(rows);
+        ArgumentNullException.ThrowIfNull(columnMetadata);
 
         if (rows.Any(row => row.Count != columns.Count))
         {
@@ -24,60 +48,205 @@ public sealed class DatasetAnalyticsService
         var categoryBreakdowns = new List<CategoryBreakdown>();
         var timeSeries = new List<TimeSeriesPoint>();
 
-        // Detect date columns, excluding columns containing only numbers.
-        var dateColumns = new HashSet<int>();
+        var metadataByIndex = columnMetadata
+            .Where(column =>
+                column.OrdinalPosition >= 0 &&
+                column.OrdinalPosition < columns.Count)
+            .ToDictionary(
+                column => column.OrdinalPosition,
+                column => column);
 
-        for (var index = 0; index < columns.Count; index++)
+        string? GetRole(int index)
         {
+            return metadataByIndex.TryGetValue(index, out var metadata)
+                ? metadata.SemanticRole
+                : null;
+        }
+
+        bool IsDateColumn(int index)
+        {
+            if (string.Equals(
+                GetRole(index),
+                "Date",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            var values = rows
+                .Select(row => row[index])
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .ToList();
+
+            return values.Count > 0 &&
+                   values.All(value => TryParseDate(value).HasValue);
+        }
+
+        bool IsDimensionColumn(int index)
+        {
+            return DimensionRoles.Contains(GetRole(index) ?? string.Empty);
+        }
+
+        bool IsNumericMeasure(int index)
+        {
+            if (IsDateColumn(index) || IsDimensionColumn(index))
+                return false;
+
             var values = rows
                 .Select(row => row[index])
                 .Where(value => !string.IsNullOrWhiteSpace(value))
                 .ToList();
 
             if (values.Count == 0)
-                continue;
+                return false;
 
-            var numericCount = values.Count(value =>
+            return values.All(value =>
                 decimal.TryParse(
                     value,
                     NumberStyles.Number,
                     CultureInfo.InvariantCulture,
                     out _));
-
-            if (numericCount == values.Count)
-                continue;
-
-            var parsedDateCount = values.Count(value =>
-                TryParseDate(value).HasValue);
-
-            if (parsedDateCount == values.Count)
-                dateColumns.Add(index);
         }
 
-        // Find the first date column.
+        var dateColumns = Enumerable.Range(0, columns.Count)
+            .Where(IsDateColumn)
+            .ToHashSet();
+
+        var measureColumns = Enumerable.Range(0, columns.Count)
+            .Where(IsNumericMeasure)
+            .ToList();
+
+        foreach (var index in measureColumns)
+        {
+            var values = rows
+                .Select(row => row[index])
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => decimal.Parse(
+                    value,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture))
+                .ToList();
+
+            if (values.Count == 0)
+                continue;
+
+            numericSummaries.Add(new NumericColumnSummary
+            {
+                ColumnName = columns[index],
+                SemanticRole = GetRole(index),
+                Sum = values.Sum(),
+                Average = values.Average(),
+                Minimum = values.Min(),
+                Maximum = values.Max(),
+                ValueCount = values.Count
+            });
+        }
+
+        // Calculate business KPIs using semantic roles.
+        NumericColumnSummary? GetMeasureSummary(string role)
+        {
+            return numericSummaries.FirstOrDefault(summary =>
+                string.Equals(
+                    summary.SemanticRole,
+                    role,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        int FindDimensionIndex(string role)
+        {
+            return Enumerable.Range(0, columns.Count)
+                .FirstOrDefault(
+                    index => string.Equals(
+                        GetRole(index),
+                        role,
+                        StringComparison.OrdinalIgnoreCase),
+                    -1);
+        }
+
+        long? GetDistinctCount(int columnIndex)
+        {
+            if (columnIndex < 0)
+                return null;
+
+            var distinctCount = rows
+                .Select(row => row[columnIndex]?.Trim())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.Ordinal)
+                .LongCount();
+
+            return distinctCount > 0 ? distinctCount : null;
+        }
+
+        var revenue = GetMeasureSummary("Revenue");
+        var profit = GetMeasureSummary("Profit");
+        var quantity = GetMeasureSummary("Quantity");
+
+        var transactionCount = GetDistinctCount(
+            FindDimensionIndex("Transaction"));
+
+        var customerCount = GetDistinctCount(
+            FindDimensionIndex("Customer"));
+
+        decimal? profitMargin = null;
+
+        if (revenue is not null &&
+            profit is not null &&
+            revenue.Sum != 0)
+        {
+            profitMargin = profit.Sum / revenue.Sum * 100;
+        }
+
+        decimal? averageOrderValue = null;
+
+        if (revenue is not null &&
+            transactionCount.HasValue &&
+            transactionCount.Value > 0)
+        {
+            averageOrderValue =
+                revenue.Sum / transactionCount.Value;
+        }
+
+        var kpis = new BusinessKpiSummary
+        {
+            TotalRevenue = revenue?.Sum,
+            TotalProfit = profit?.Sum,
+            AverageRevenue = revenue?.Average,
+            TotalQuantitySold = quantity?.Sum,
+            ProfitMargin = profitMargin,
+            TotalTransactions = transactionCount,
+            AverageOrderValue = averageOrderValue,
+            TotalCustomers = customerCount
+        };
+
         var dateIndex = dateColumns
             .OrderBy(index => index)
             .FirstOrDefault(-1);
 
-        // Find a numeric measure named Revenue for the time series.
-        var revenueIndex = -1;
-
-        for (var index = 0; index < columns.Count; index++)
+        var preferredMeasureRoles = new[]
         {
-            if (string.Equals(
-                columns[index].Trim(),
-                "Revenue",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                revenueIndex = index;
+            "Revenue",
+            "Profit",
+            "Quantity"
+        };
+
+        var measureIndex = -1;
+
+        foreach (var preferredRole in preferredMeasureRoles)
+        {
+            measureIndex = measureColumns.FirstOrDefault(
+                index => string.Equals(
+                    GetRole(index),
+                    preferredRole,
+                    StringComparison.OrdinalIgnoreCase),
+                -1);
+
+            if (measureIndex >= 0)
                 break;
-            }
         }
 
-        // Aggregate revenue by date when both columns are available.
-        if (dateIndex >= 0 && revenueIndex >= 0)
+        if (dateIndex >= 0 && measureIndex >= 0)
         {
-            var dailyRevenue = new SortedDictionary<DateTime, decimal>();
+            var dailyValues = new SortedDictionary<DateTime, decimal>();
 
             foreach (var row in rows)
             {
@@ -85,35 +254,37 @@ public sealed class DatasetAnalyticsService
 
                 if (!date.HasValue ||
                     !decimal.TryParse(
-                        row[revenueIndex],
+                        row[measureIndex],
                         NumberStyles.Number,
                         CultureInfo.InvariantCulture,
-                        out var revenue))
+                        out var value))
                 {
                     continue;
                 }
 
                 var day = date.Value.Date;
 
-                if (!dailyRevenue.ContainsKey(day))
-                    dailyRevenue[day] = 0;
+                if (!dailyValues.ContainsKey(day))
+                    dailyValues[day] = 0;
 
-                dailyRevenue[day] += revenue;
+                dailyValues[day] += value;
             }
 
             timeSeries.AddRange(
-                dailyRevenue.Select(item => new TimeSeriesPoint
+                dailyValues.Select(item => new TimeSeriesPoint
                 {
                     Period = item.Key,
                     Value = item.Value
                 }));
         }
 
-        // Classify numeric and categorical columns.
         for (var index = 0; index < columns.Count; index++)
         {
-            if (dateColumns.Contains(index))
+            if (dateColumns.Contains(index) ||
+                measureColumns.Contains(index))
+            {
                 continue;
+            }
 
             var values = rows
                 .Select(row => row[index])
@@ -122,41 +293,6 @@ public sealed class DatasetAnalyticsService
 
             if (values.Count == 0)
                 continue;
-
-            var parsedNumbers = new List<decimal>();
-            var allNumeric = true;
-
-            foreach (var value in values)
-            {
-                if (decimal.TryParse(
-                    value,
-                    NumberStyles.Number,
-                    CultureInfo.InvariantCulture,
-                    out var number))
-                {
-                    parsedNumbers.Add(number);
-                }
-                else
-                {
-                    allNumeric = false;
-                    break;
-                }
-            }
-
-            if (allNumeric)
-            {
-                numericSummaries.Add(new NumericColumnSummary
-                {
-                    ColumnName = columns[index],
-                    Sum = parsedNumbers.Sum(),
-                    Average = parsedNumbers.Average(),
-                    Minimum = parsedNumbers.Min(),
-                    Maximum = parsedNumbers.Max(),
-                    ValueCount = parsedNumbers.Count
-                });
-
-                continue;
-            }
 
             var groupedValues = values
                 .GroupBy(value => value, StringComparer.Ordinal)
@@ -171,25 +307,16 @@ public sealed class DatasetAnalyticsService
 
             var measures = new List<CategoryMeasure>();
 
-            // Calculate each numeric measure separately for each category.
-            for (var measureIndex = 0;
-                 measureIndex < columns.Count;
-                 measureIndex++)
+            foreach (var measureColumnIndex in measureColumns)
             {
-                if (measureIndex == index ||
-                    dateColumns.Contains(measureIndex))
-                {
-                    continue;
-                }
-
-                var numericValues = rows
+                var categoryGroups = rows
                     .Where(row =>
                         !string.IsNullOrWhiteSpace(row[index]) &&
-                        !string.IsNullOrWhiteSpace(row[measureIndex]))
+                        !string.IsNullOrWhiteSpace(row[measureColumnIndex]))
                     .Select(row =>
                     {
                         var success = decimal.TryParse(
-                            row[measureIndex],
+                            row[measureColumnIndex],
                             NumberStyles.Number,
                             CultureInfo.InvariantCulture,
                             out var number);
@@ -201,33 +328,25 @@ public sealed class DatasetAnalyticsService
                             Number = number
                         };
                     })
-                    .ToList();
-
-                // Skip columns containing non-numeric values.
-                if (numericValues.Count == 0 ||
-                    numericValues.Any(item => !item.Success))
-                {
-                    continue;
-                }
-
-                var categoryGroups = numericValues
+                    .Where(item => item.Success)
                     .GroupBy(
                         item => item.Category,
                         StringComparer.Ordinal);
 
                 foreach (var group in categoryGroups)
                 {
-                    var groupNumbers = group
+                    var numbers = group
                         .Select(item => item.Number)
                         .ToList();
 
                     measures.Add(new CategoryMeasure
                     {
-                        MeasureColumnName = columns[measureIndex],
+                        MeasureColumnName = columns[measureColumnIndex],
+                        SemanticRole = GetRole(measureColumnIndex),
                         CategoryLabel = group.Key,
-                        Total = groupNumbers.Sum(),
-                        Average = groupNumbers.Average(),
-                        ValueCount = groupNumbers.Count
+                        Total = numbers.Sum(),
+                        Average = numbers.Average(),
+                        ValueCount = numbers.Count
                     });
                 }
             }
@@ -235,6 +354,7 @@ public sealed class DatasetAnalyticsService
             categoryBreakdowns.Add(new CategoryBreakdown
             {
                 ColumnName = columns[index],
+                SemanticRole = GetRole(index),
                 Values = groupedValues,
                 Measures = measures
             });
@@ -245,6 +365,7 @@ public sealed class DatasetAnalyticsService
             DatasetId = datasetId,
             TotalRows = rows.Count,
             TotalColumns = columns.Count,
+            Kpis = kpis,
             NumericColumns = numericSummaries,
             CategoryBreakdowns = categoryBreakdowns,
             TimeSeries = timeSeries
