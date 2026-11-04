@@ -9,10 +9,25 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Connectors.Google;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
+    ?? throw new InvalidOperationException(
+        "Gemini API key is missing. Configure Gemini:ApiKey using User Secrets.");
+
+#pragma warning disable SKEXP0070
+builder.Services.AddGoogleAIGeminiChatCompletion(
+    modelId: "gemini-3.8-flash",
+    apiKey: geminiApiKey,
+    apiVersion: GoogleAIVersion.V1_Beta);
+
+builder.Services.AddScoped<Kernel>(serviceProvider =>
+    new Kernel(serviceProvider));
+#pragma warning restore SKEXP0070
 
 // Add services to the container.
 
@@ -48,7 +63,6 @@ builder.Services.AddDbContext<InsightFlowAiContext>(options =>
 
 builder.Services.AddScoped<IDatasetRepository, DatasetRepository>();
 
-builder.Services.AddScoped<IDatasetService, DatasetService>();
 
 builder.Services.AddScoped<DatasetAnalyticsService>();
 
@@ -129,9 +143,7 @@ builder.Services.AddHttpClient<
         client.Timeout = TimeSpan.FromSeconds(120);
     });
 
-builder.Services.AddScoped<IDatasetService, DatasetService>();
 
-builder.Services.AddScoped<IDatasetRepository, DatasetRepository>();
 
 builder.Services.AddScoped<
     IForecastRepository,

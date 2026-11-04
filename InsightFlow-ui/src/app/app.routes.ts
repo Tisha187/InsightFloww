@@ -11,6 +11,7 @@ import { Upload } from './features/upload/upload';
 import { RouterLink } from '@angular/router';
 import { Analytics } from './features/analytics/analytics';
 import { Forecasting } from './features/forecasting/forecasting';
+import { AiAnalyst } from './features/ai-analyst/ai-analyst';
 
 
 export const routes: Routes = [
@@ -69,7 +70,7 @@ export const routes: Routes = [
   },
   {
     path: 'ai-analyst',
-    component: PagePlaceholder,
+    component: AiAnalyst,
     data: {
       title: 'AI Analyst',
       eyebrow: 'INTELLIGENCE',

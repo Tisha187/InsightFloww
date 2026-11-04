@@ -1,0 +1,147 @@
+<div class="ai-workspace">
+
+  <!-- Sidebar -->
+  <aside class="chat-sidebar">
+
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">✦</div>
+        <div>
+          <h2>InsightFlow</h2>
+          <span>AI ANALYST</span>
+        </div>
+      </div>
+
+      <button class="new-chat-btn" (click)="startNewConversation()">
+        <span>＋</span> New conversation
+      </button>
+    </div>
+
+    <div class="conversation-section">
+      <p class="section-label">YOUR CONVERSATIONS</p>
+
+      <button class="conversation-item"
+              *ngFor="let conversation of conversations"
+              [class.active]="activeConversationId === conversation.id"
+              (click)="selectConversation(conversation)">
+        <span class="conversation-icon">◷</span>
+        <span class="conversation-title">{{ conversation.title }}</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="status-dot"></div>
+      <span>AI Analyst Workspace</span>
+    </div>
+
+  </aside>
+
+  <!-- Main Chat Area -->
+  <main class="chat-main">
+
+    <!-- Header -->
+    <header class="chat-header">
+      <div>
+        <h1>AI Analyst</h1>
+        <p>Ask questions. Discover insights. Make better decisions.</p>
+      </div>
+
+      <div class="dataset-selector">
+        <span class="dataset-label">DATASET</span>
+
+        <select [(ngModel)]="selectedDataset">
+          <option *ngFor="let dataset of datasets" [value]="dataset">
+            {{ dataset }}
+          </option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Messages -->
+    <section class="chat-content">
+
+      <div class="welcome-section" *ngIf="messages.length <= 1">
+        <div class="welcome-icon">✦</div>
+
+        <h2>Your data has a story.<br />Let's discover it.</h2>
+
+        <p>
+          I'm your AI-powered business analyst. Ask me anything about your
+          data, from revenue trends to product performance.
+        </p>
+
+        <div class="suggestion-grid">
+          <button class="suggestion-card"
+                  *ngFor="let prompt of suggestedPrompts"
+                  (click)="usePrompt(prompt)">
+            <span>{{ prompt }}</span>
+            <span class="suggestion-arrow">↗</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="message-list">
+
+        <div class="message-row"
+             *ngFor="let message of messages"
+             [class.user-row]="message.role === 'user'">
+
+          <div class="avatar" *ngIf="message.role === 'assistant'">✦</div>
+
+          <div class="message-body">
+            <span class="message-author">
+              {{ message.role === 'assistant' ? 'InsightFlow AI' : 'You' }}
+            </span>
+
+            <div class="message-bubble">
+              {{ message.content }}
+            </div>
+          </div>
+
+          <div class="user-avatar" *ngIf="message.role === 'user'">Y</div>
+
+        </div>
+
+        <div class="message-row" *ngIf="isTyping">
+          <div class="avatar">✦</div>
+          <div class="message-body">
+            <span class="message-author">InsightFlow AI</span>
+            <div class="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Message Composer -->
+    <footer class="composer-section">
+
+      <div class="composer">
+        <textarea [(ngModel)]="messageInput"
+                  placeholder="Ask anything about your data..."
+                  rows="1"
+                  (keydown.enter)="sendMessage(); $event.preventDefault()"></textarea>
+
+        <button class="send-btn"
+                [disabled]="!messageInput.trim() || isTyping"
+                (click)="sendMessage()"
+                aria-label="Send message">
+          ↑
+        </button>
+      </div>
+
+      <p class="composer-note">
+        InsightFlow AI can make mistakes. Verify important business decisions
+        with your source data.
+      </p>
+
+    </footer>
+
+  </main>
+
+</div>

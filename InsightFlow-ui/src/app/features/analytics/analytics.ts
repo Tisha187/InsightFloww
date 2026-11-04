@@ -99,6 +99,122 @@ export class Analytics implements OnInit {
     },
   };
 
+  // Custom labels for average revenue bar charts
+  moneyLabelPlugins: any[] = [
+    {
+      id: 'moneyValueLabels',
+      afterDatasetsDraw(chart: any) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const values = chart.data.datasets[0]?.data ?? [];
+
+        ctx.save();
+        ctx.fillStyle = '#173b70';
+        ctx.font = '600 11px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+
+        meta.data.forEach((bar: any, index: number) => {
+          const value = Number(values[index]);
+
+          if (!Number.isFinite(value)) return;
+
+          ctx.fillText(
+            `₹${value.toLocaleString('en-IN', {
+              maximumFractionDigits: 0
+            })}`,
+            bar.x,
+            bar.y - 6
+          );
+        });
+
+        ctx.restore();
+      }
+    }
+  ];
+
+  // Custom labels for category count bar chart
+  countLabelPlugins: any[] = [
+    {
+      id: 'countValueLabels',
+      afterDatasetsDraw(chart: any) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        const values = chart.data.datasets[0]?.data ?? [];
+
+        ctx.save();
+        ctx.fillStyle = '#173b70';
+        ctx.font = '600 11px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+
+        meta.data.forEach((bar: any, index: number) => {
+          const value = Number(values[index]);
+
+          if (!Number.isFinite(value)) return;
+
+          ctx.fillText(
+            value.toLocaleString('en-IN'),
+            bar.x,
+            bar.y - 6
+          );
+        });
+
+        ctx.restore();
+      }
+    }
+  ];
+
+  // Custom percentage labels inside doughnut chart segments
+  compositionPlugins: any[] = [
+    {
+      id: 'compositionPercentageLabels',
+      afterDatasetsDraw(chart: any) {
+        const { ctx } = chart;
+        const values = chart.data.datasets[0]?.data ?? [];
+        const total = values.reduce(
+          (sum: number, value: number) => sum + Number(value || 0),
+          0
+        );
+
+        if (total <= 0) return;
+
+        const meta = chart.getDatasetMeta(0);
+
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '600 11px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        meta.data.forEach((arc: any, index: number) => {
+          const value = Number(values[index] || 0);
+
+          if (value <= 0) return;
+
+          const percent = Math.round((value / total) * 100);
+          const position = arc.tooltipPosition();
+
+          ctx.fillText(
+            `${percent}%`,
+            position.x,
+            position.y
+          );
+        });
+
+        ctx.restore();
+      }
+    }
+  ];
+
+  // Custom legend displayed beside the composition chart
+  compositionLegend: {
+    label: string;
+    color: string;
+    count: number;
+    percent: number;
+  }[] = [];
+
 
   // 1. Overall average revenue chart
   overallRevenueChartData: any = {
@@ -346,22 +462,43 @@ export class Analytics implements OnInit {
       totalColumns - numericCount - categoryCount
     );
 
+    const compositionItems = [
+      {
+        label: 'Numeric',
+        color: '#173b70',
+        count: numericCount
+      },
+      {
+        label: 'Categorical',
+        color: '#2459a9',
+        count: categoryCount
+      },
+      {
+        label: 'Other / Unclassified',
+        color: '#a9b9ce',
+        count: otherCount
+      }
+    ];
+
+    this.compositionLegend = compositionItems.map(item => ({
+      ...item,
+      percent: totalColumns > 0
+        ? Math.round((item.count / totalColumns) * 100)
+        : 0
+    }));
+
     this.compositionChartData = {
-      labels: ['Numeric', 'Categorical', 'Other / Unclassified'],
+      labels: compositionItems.map(item => item.label),
       datasets: [
         {
           label: 'Columns',
-          data: [numericCount, categoryCount, otherCount],
-          backgroundColor: [
-            '#173b70',
-            '#2459a9',
-            '#a9b9ce',
-          ],
+          data: compositionItems.map(item => item.count),
+          backgroundColor: compositionItems.map(item => item.color),
           borderColor: '#ffffff',
           borderWidth: 3,
-          hoverOffset: 5,
-        },
-      ],
+          hoverOffset: 5
+        }
+      ]
     };
   }
 
