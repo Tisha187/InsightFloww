@@ -15,19 +15,20 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
-    ?? throw new InvalidOperationException(
-        "Gemini API key is missing. Configure Gemini:ApiKey using User Secrets.");
+var geminiApiKey = builder.Configuration["Gemini:ApiKey"];
 
+if (!string.IsNullOrWhiteSpace(geminiApiKey))
+{
 #pragma warning disable SKEXP0070
-builder.Services.AddGoogleAIGeminiChatCompletion(
-    modelId: "gemini-3.8-flash",
-    apiKey: geminiApiKey,
-    apiVersion: GoogleAIVersion.V1_Beta);
+    builder.Services.AddGoogleAIGeminiChatCompletion(
+        modelId: "gemini-3.8-flash",
+        apiKey: geminiApiKey,
+        apiVersion: GoogleAIVersion.V1_Beta);
 
-builder.Services.AddScoped<Kernel>(serviceProvider =>
-    new Kernel(serviceProvider));
+    builder.Services.AddScoped<Kernel>(serviceProvider =>
+        new Kernel(serviceProvider));
 #pragma warning restore SKEXP0070
+}
 
 // Add services to the container.
 
@@ -118,12 +119,16 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularClient", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

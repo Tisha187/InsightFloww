@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Auth } from '../../core/services/auth';
+import { environment } from '../../../environments/environment';
 
 interface Dataset {
   id: string;
@@ -34,7 +35,7 @@ export class DatasetDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  private readonly apiUrl = 'http://localhost:5282/api/Datasets';
+  private readonly apiUrl = `${environment.apiUrl}/Datasets`;
 
   dataset: Dataset | null = null;
   preview: DatasetPreview | null = null;

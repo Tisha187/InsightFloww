@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Auth } from '../../core/services/auth';
+import { environment } from '../../../environments/environment';
 
 interface Dataset {
   id: string;
@@ -30,7 +31,7 @@ export class Datasets implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(Auth);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly apiUrl = 'http://localhost:5282/api/Datasets';
+  private readonly apiUrl = `${environment.apiUrl}/Datasets`;
 
   datasets: Dataset[] = [];
   loading = true;

@@ -3,6 +3,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface RegisterRequest {
   userName: string;
@@ -36,7 +37,7 @@ export class Auth {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly apiUrl = 'http://localhost:5282/api/Auth';
+  private readonly apiUrl = `${environment.apiUrl}/Auth`;
   private readonly tokenKey = 'insightflow_access_token';
   private readonly userKey = 'insightflow_user';
 

@@ -10,9 +10,9 @@ namespace InsightFlow.Api.Controllers;
 [Route("api/[controller]")]
 public sealed class AiTestController : ControllerBase
 {
-    private readonly Kernel _kernel;
+    private readonly Kernel? _kernel;
 
-    public AiTestController(Kernel kernel)
+    public AiTestController(Kernel? kernel)
     {
         _kernel = kernel;
     }
@@ -33,6 +33,16 @@ public sealed class AiTestController : ControllerBase
             {
                 message = "Message cannot be empty."
             });
+        }
+
+        if (_kernel is null)
+        {
+            return StatusCode(
+                StatusCodes.Status503ServiceUnavailable,
+                new
+                {
+                    message = "AI chat service is currently unavailable."
+                });
         }
 
         try

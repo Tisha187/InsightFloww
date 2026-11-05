@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { Auth } from '../../core/services/auth';
+import { environment } from '../../../environments/environment';
 
 interface Dataset {
   id: string;
@@ -33,7 +34,7 @@ export class Analytics implements OnInit {
   private readonly auth = inject(Auth);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  private readonly apiUrl = 'http://localhost:5282/api/Datasets';
+  private readonly apiUrl = `${environment.apiUrl}/Datasets`;
 
   datasets: Dataset[] = [];
   selectedDatasetId = '';

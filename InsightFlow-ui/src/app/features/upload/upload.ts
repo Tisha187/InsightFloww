@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../core/services/auth';
+import { environment } from '../../../environments/environment';
 
 interface UploadResponse {
   id: string;
@@ -33,7 +34,7 @@ export class Upload {
   private readonly auth = inject(Auth);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly apiUrl = 'http://localhost:5282/api/Datasets/upload';
+  private readonly apiUrl = `${environment.apiUrl}/Datasets/upload`;
 
   selectedFile: File | null = null;
   datasetName = '';
@@ -140,7 +141,7 @@ export class Upload {
 
         this.http
           .post<ProcessResponse>(
-            `http://localhost:5282/api/Datasets/${response.id}/process`,
+            `${ environment.apiUrl } / Datasets / ${ response.id } / process`,
             {},
             { headers }
           )
