@@ -10,16 +10,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YOUR_USERNAME/YOUR_REPO/actions"><img src="https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/YOUR_REPO/YOUR_WORKFLOW.yml?label=build" alt="Build Status" /></a>
   <img src="https://img.shields.io/badge/.NET-10-512BD4" alt=".NET 10" />
   <img src="https://img.shields.io/badge/Angular-22-DD0031" alt="Angular 22" />
   <img src="https://img.shields.io/badge/Python-FastAPI-009688" alt="FastAPI" />
-  <a href="YOUR_LICENSE_LINK"><img src="https://img.shields.io/badge/license-YOUR_LICENSE-blue" alt="License" /></a>
 </p>
 
 <p align="center">
   <a href="https://insightflow-frontend-f2sk.onrender.com/">🌐 Live Demo</a> •
-  <a href="YOUR_BACKEND_SWAGGER_URL">📘 API Docs (Swagger)</a> •
+  <!-- <a href="YOUR_BACKEND_SWAGGER_URL">📘 API Docs (Swagger)</a> • -->
   <!-- <a href="YOUR_DEMO_VIDEO_URL">🎥 Demo Video</a> • -->
   <a href="https://www.linkedin.com/in/tisha-yadav">👤 Author</a>
 </p>
@@ -37,30 +35,6 @@ The platform combines traditional business analytics, machine learning-based for
 
 Rather than relying exclusively on static dashboards, InsightFlow aims to provide an interactive analytical experience where users can upload datasets, explore business metrics, generate predictions, and eventually delegate analytical tasks to AI agents.
 
----
-
-## 📑 Table of Contents
-
-1. [Project Overview](#1-project-overview)
-2. [Live Links](#2-live-links)
-3. [Screenshots](#3-screenshots)
-4. [Key Features](#4-key-features)
-5. [Technology Stack](#5-technology-stack)
-6. [System Architecture](#6-system-architecture)
-7. [Backend Architecture](#7-backend-architecture)
-8. [Database Architecture](#8-database-architecture)
-9. [Forecasting Microservice Architecture](#9-forecasting-microservice-architecture)
-10. [Agentic AI Architecture](#10-agentic-ai-architecture)
-11. [API Architecture](#11-api-architecture)
-12. [Deployment Architecture](#12-deployment-architecture)
-13. [Repository Structure](#13-repository-structure)
-14. [Local Development Setup](#14-local-development-setup)
-15. [Security Considerations](#15-security-considerations)
-16. [Development Roadmap](#16-development-roadmap)
-17. [Engineering Concepts Demonstrated](#17-engineering-concepts-demonstrated)
-18. [Project Information](#18-project-information)
-19. [License](#19-license)
-20. [Author](#20-author)
 
 ---
 
@@ -87,7 +61,7 @@ Businesses generate large volumes of sales data, but extracting meaningful insig
 | ❤️ Health Check(Forecasting Service) | [Open_URL](https://insightfloww-oz7b.onrender.com/) |
 | 📂 Sample Dataset | [Sample_Data](https://drive.google.com/file/d/1l9sxXaa1eaMOtw2qiTr2Qlg1bIHzLFdC/view?usp=sharing) |
 
-
+<h6>Try the live demo using the sample dataset to explore InsightFlow AI's features.</h6>
 ---
 
 
@@ -276,40 +250,6 @@ InsightFlow follows a modular architecture with an Angular frontend, a .NET back
                                AZURE SQL
 ```
 
-### Architectural Responsibilities
-
-**Angular Frontend**
-- User interface.
-- Authentication.
-- Dataset uploads.
-- Dataset management.
-- Analytics dashboards.
-- Forecasting configuration.
-- AI Analyst interface.
-
-**ASP.NET Core Backend**
-- Authentication and authorization.
-- Dataset management.
-- Business analytics.
-- Database operations.
-- Forecasting orchestration.
-- AI orchestration and tool execution.
-
-**Python Forecasting Service**
-- Data preprocessing.
-- Time-series processing.
-- Model execution.
-- Forecast generation.
-- Evaluation and prediction outputs.
-
-**Azure SQL Database**
-- User records.
-- Dataset metadata.
-- Dataset column information.
-- Forecast history.
-- Forecast prediction points.
-- AI conversation and tool-execution records.
-
 ---
 
 # 6. Backend Architecture
@@ -427,7 +367,7 @@ forecasting-service/
 └── test_forecasting.py
 ```
 
-> 🔗 **Forecasting service repository / folder:** [YOUR_FORECASTING_SERVICE_REPO_LINK](YOUR_FORECASTING_SERVICE_REPO_LINK)
+> 🔗 **Forecasting service repository / folder:** https://github.com/Tisha187/InsightFloww/tree/main/forecasting-service
 
 ---
 
@@ -622,12 +562,7 @@ cd forecasting-service
 uvicorn app.main:app --reload
 ```
 
-🔐 **Report a vulnerability:** YOUR_SECURITY_CONTACT_EMAIL_OR_LINK
-
----
-
-
-# 19. License
+# 14. License
 
 This project is a personal project developed by Tisha Yadav.
 
@@ -635,7 +570,7 @@ This project is a personal project developed by Tisha Yadav.
 
 ---
 
-# 20. Author
+# 15. Author
 
 Made with ❤️ By Tisha
 
