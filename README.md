@@ -312,7 +312,7 @@ InsightFlow follows a modular architecture with an Angular frontend, a .NET back
 
 ---
 
-# 7. Backend Architecture
+# 6. Backend Architecture
 
 The backend is developed using ASP.NET Core Web API with .NET 10.
 
@@ -341,40 +341,13 @@ Solution1/
 │
 └── Solution1.slnx
 ```
-
-### InsightFlow.Api
-
-Responsible for:
-
-- HTTP endpoints.
-- Request and response handling.
-- Authentication middleware.
-- Authorization.
-- Dependency injection.
-- API configuration.
-- Service orchestration.
-
-### InsightFlow.Core
-
-Responsible for:
-
-- Domain models.
-- Business logic.
-- Application services.
-- Database-related abstractions.
-- Core application functionality.
-
-
 ---
 
-# 8. Database Architecture
+# 7. Database Architecture
 
 The project uses SQL Server for relational data storage and Entity Framework Core for database operations.
 
 The development database uses SQL Server LocalDB, while the production database uses Azure SQL Database.
-
-<!-- 🖼️ ER DIAGRAM: export from SSMS / dbdiagram.io / draw.io -->
-![Entity Relationship Diagram](docs/images/er-diagram.png)
 
 ### Major Entities
 
@@ -418,7 +391,7 @@ The application uses authenticated user context to control access to datasets an
 
 ---
 
-# 9. Forecasting Microservice Architecture
+# 8. Forecasting Microservice Architecture
 
 Forecasting is implemented as a separate Python service instead of placing all machine learning logic inside the .NET backend.
 
@@ -442,49 +415,25 @@ This separation provides:
 8. Forecast records and prediction points are persisted.
 9. Angular displays the results.
 
-<!-- 🖼️ SEQUENCE DIAGRAM (optional): Angular → .NET API → FastAPI → Azure SQL -->
-![Forecasting Sequence Diagram](docs/images/forecasting-sequence.png)
+```text
+forecasting-service/
+│
+├── app/
+│   ├── forecasting.py
+│   ├── main.py
+│   └── __init__.py
+│
+├── requirements.txt
+└── test_forecasting.py
+```
 
 > 🔗 **Forecasting service repository / folder:** [YOUR_FORECASTING_SERVICE_REPO_LINK](YOUR_FORECASTING_SERVICE_REPO_LINK)
 
 ---
 
-# 10. Agentic AI Architecture
+# 9. Agentic AI Architecture
 
 The long-term AI architecture is based on an orchestrated system where an LLM can interact with application capabilities.
-
-### Proposed Workflow
-
-```text
-User Query
-    |
-    v
-AI Analyst Interface
-    |
-    v
-AI Orchestration Layer
-    |
-    v
-LLM Reasoning
-    |
-    v
-Intent / Tool Selection
-    |
-    v
-Application Tool Execution
-    |
-    v
-Tool Result
-    |
-    v
-LLM Response Generation
-    |
-    v
-Contextual Response
-```
-
-<!-- 🖼️ AGENT WORKFLOW DIAGRAM (optional): a visual version of the flow above -->
-![Agentic AI Workflow](docs/images/agent-workflow.png)
 
 ### Why Agentic AI?
 
@@ -512,7 +461,7 @@ An agentic system can additionally:
 
 ---
 
-# 11. API Architecture
+# 10. API Architecture
 
 The ASP.NET Core backend exposes REST APIs for frontend communication.
 
@@ -526,35 +475,12 @@ Major API modules include:
 | Forecasting | Forecast execution and history |
 | AI Analyst | Conversational analytics and agent interactions |
 
-📘 **Full API documentation:** [YOUR_SWAGGER_URL](YOUR_SWAGGER_URL)
-
-<!-- 🖼️ Screenshot: Swagger UI -->
-![Swagger UI](docs/images/swagger.png)
-
-### Python Forecasting API
-
-The forecasting microservice exposes independent endpoints for forecast processing and service health checks.
-
-The exact endpoint contracts are maintained by the Python service implementation.
-
-📘 **Forecasting API docs (FastAPI `/docs`):** [YOUR_FORECASTING_DOCS_URL](YOUR_FORECASTING_DOCS_URL)
 
 ---
 
-# 12. Deployment Architecture
+# 11. Deployment Architecture
 
 The project uses a combination of Microsoft Azure and Render.
-
-| Component | Deployment Platform | Link |
-|---|---|---|
-| Angular Frontend | Render | [YOUR_FRONTEND_URL](YOUR_FRONTEND_URL) |
-| ASP.NET Core Backend | Render | [YOUR_BACKEND_URL](YOUR_BACKEND_URL) |
-| Python Forecasting Service | Render | [YOUR_FORECASTING_SERVICE_URL](YOUR_FORECASTING_SERVICE_URL) |
-| Relational Database | Azure SQL Database | N/A (private) |
-| Source Code | GitHub | [YOUR_GITHUB_REPOSITORY_URL](YOUR_GITHUB_REPOSITORY_URL) |
-
-<!-- 🖼️ DEPLOYMENT DIAGRAM (optional): Render services + Azure SQL -->
-![Deployment Architecture](docs/images/deployment-diagram.png)
 
 ### Frontend Deployment
 
@@ -579,7 +505,7 @@ The project uses a combination of Microsoft Azure and Render.
 
 ---
 
-# 13. Repository Structure
+# 12. Repository Structure
 
 The repository is organized around the main application components.
 
@@ -617,11 +543,10 @@ InsightFlow/
 └── README.md
 ```
 
-The exact Python forecasting service location and deployment configuration are maintained separately from the two-project .NET solution.
 
 ---
 
-# 14. Local Development Setup
+# 13. Local Development Setup
 
 ### Prerequisites
 
@@ -638,7 +563,7 @@ Install:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone [URL](https://github.com/Tisha187/InsightFloww)
 ```
 
 ### Step 2: Open the Backend Solution
@@ -683,206 +608,44 @@ npm install
 ### Step 7: Run Angular
 
 ```bash
-ng serve
+ng serve -o
 ```
 
 The frontend development environment uses the local backend API configuration.
 
 ### Step 8: Run the Forecasting Service
 
-Navigate to the forecasting service directory, install its Python dependencies, configure the required environment variables, and start the FastAPI application using Uvicorn.
+From the solution root directory, run:
 
-> 🔗 **Detailed forecasting setup:** [YOUR_FORECASTING_SETUP_DOC_LINK](YOUR_FORECASTING_SETUP_DOC_LINK)
-
-### Environment Variables
-
-<!-- 📝 Fill this table in. Never put real secrets here. -->
-
-| Variable | Service | Purpose | Required | Example |
-|---|---|---|---|---|
-| `ConnectionStrings__DefaultConnection` | Backend | SQL Server connection | Yes | `YOUR_EXAMPLE_VALUE` |
-| `Jwt__Key` | Backend | JWT signing key | Yes | `YOUR_EXAMPLE_VALUE` |
-| `Jwt__Issuer` | Backend | JWT issuer | Yes | `YOUR_EXAMPLE_VALUE` |
-| `ForecastingService__BaseUrl` | Backend | URL of the FastAPI service | Yes | `http://localhost:8000` |
-| `YOUR_VARIABLE` | YOUR_SERVICE | YOUR_PURPOSE | YOUR_REQUIRED | `YOUR_EXAMPLE_VALUE` |
-
----
-
-# 15. Security Considerations
-
-The application incorporates:
-
-- JWT authentication.
-- ASP.NET Core Identity.
-- Protected API endpoints.
-- User-specific dataset access.
-- CORS configuration.
-- Environment-specific application settings.
-- Externalized secrets and connection strings.
-- Authenticated backend operations.
-
-Future security improvements include:
-
-- Role-based access control.
-- Agent-level permissions.
-- API rate limiting.
-- Audit logging.
-- SQL query validation.
-- Production secret management.
-- More comprehensive automated security testing.
+```bash
+cd forecasting-service
+uvicorn app.main:app --reload
+```
 
 🔐 **Report a vulnerability:** YOUR_SECURITY_CONTACT_EMAIL_OR_LINK
 
 ---
 
-# 16. Development Roadmap
-
-### Phase 1 — Core Application
-
-- [x] .NET backend foundation.
-- [x] Angular frontend.
-- [x] SQL Server integration.
-- [x] User registration and login implementation.
-- [x] JWT authentication.
-- [x] Dataset upload.
-- [x] CSV and Excel processing.
-- [x] Dataset management.
-- [x] User-specific data isolation.
-
-### Phase 2 — Business Analytics
-
-- [x] Analytics API foundation.
-- [x] Dataset summary endpoints.
-- [x] Angular analytics dashboard.
-- [x] Interactive charts.
-- [ ] Further performance optimization.
-- [ ] Advanced analytical insights.
-
-### Phase 3 — Predictive Analytics
-
-- [x] Forecasting architecture and database entities.
-- [x] Python-based forecasting service foundation.
-- [ ] Complete forecasting workflow verification.
-- [ ] Forecast visualization improvements.
-- [ ] Forecast integration with analytics dashboards.
-- [ ] Advanced model evaluation.
-
-### Phase 4 — Generative & Agentic AI
-
-- [x] AI conversation data model.
-- [x] Agent tool-execution data model.
-- [ ] Complete AI Analyst workflow.
-- [ ] Dataset-aware AI tools.
-- [ ] Persistent conversational experience.
-- [ ] Multi-agent orchestration.
-- [ ] RAG integration.
-- [ ] Automated insight generation.
-
-### Phase 5 — Production & Scalability
-
-- [x] GitHub version control.
-- [x] Frontend cloud deployment.
-- [x] Backend cloud deployment.
-- [x] Azure SQL infrastructure.
-- [ ] End-to-end production authentication verification.
-- [ ] Cloud file-storage integration.
-- [ ] Monitoring and observability.
-- [ ] CI/CD improvements.
-- [ ] Automated integration testing.
-
-📋 **Issue tracker / project board:** [YOUR_PROJECT_BOARD_LINK](YOUR_PROJECT_BOARD_LINK)
-📝 **Changelog:** [CHANGELOG.md](YOUR_CHANGELOG_LINK)
-
----
-
-# 17. Engineering Concepts Demonstrated
-
-InsightFlow AI brings together several areas of modern software engineering.
-
-**Full-Stack Development**
-- Angular.
-- TypeScript.
-- C#.
-- ASP.NET Core.
-- REST API development.
-
-**Backend Engineering**
-- Layered architecture.
-- Dependency injection.
-- Entity Framework Core.
-- Authentication and authorization.
-- Database-first development.
-
-**Cloud Engineering**
-- Azure SQL Database.
-- Docker.
-- Render deployment.
-- Environment configuration.
-- Git-based deployment workflows.
-
-**Machine Learning Engineering**
-- Python.
-- FastAPI.
-- Time-series forecasting.
-- Statistical modelling.
-- ML service integration.
-
-**Generative & Agentic AI**
-- LLM integration.
-- Semantic Kernel architecture.
-- Function calling.
-- AI tool execution.
-- Conversational context.
-- Multi-agent system design.
-- Retrieval-Augmented Generation.
-
----
-
-# 18. Project Information
-
-**Project:** InsightFlow AI
-
-**Category:** Full-Stack Development | Business Intelligence | Predictive Analytics | Agentic AI
-
-**Frontend:** Angular 22
-
-**Backend:** ASP.NET Core Web API (.NET 10)
-
-**Database:** Microsoft SQL Server / Azure SQL Database
-
-**Forecasting:** Python / FastAPI
-
-**AI Architecture:** Semantic Kernel and LLM-based orchestration
-
-**Cloud:** Microsoft Azure and Render
-
-**Version Control:** Git and GitHub
-
----
 
 # 19. License
 
-This project is licensed under the **YOUR_LICENSE_NAME** license. See the [LICENSE](YOUR_LICENSE_FILE_LINK) file for details.
+This project is a personal project developed by Tisha Yadav.
+
+© 2026 Tisha Yadav. All rights reserved.
 
 ---
 
 # 20. Author
 
-<p>
-  <!-- 🖼️ PROFILE PHOTO (optional) -->
-  <img src="docs/images/author.jpg" alt="Tisha Yadav" width="100" style="border-radius:50%;" />
-</p>
-
-**Tisha Yadav**
+Made with ❤️ By Tisha
 
 Digital Specialist Engineer | .NET Full-Stack Development | Generative AI | Agentic AI
 
 | | |
 |---|---|
-| 💼 LinkedIn | [YOUR_LINKEDIN_URL](YOUR_LINKEDIN_URL) |
-| 🐙 GitHub | [YOUR_GITHUB_PROFILE_URL](YOUR_GITHUB_PROFILE_URL) |
-| 🌐 Portfolio | [YOUR_PORTFOLIO_URL](YOUR_PORTFOLIO_URL) |
-| 📧 Email | [YOUR_EMAIL](mailto:YOUR_EMAIL) |
+| 💼 LinkedIn | [URL](https://www.linkedin.com/in/tisha-yadav) |
+| 🐙 GitHub | [URL](https://github.com/Tisha187) |
+| 📧 Email | [EMAIL](tishayadav07@gmail.com) |
 
 ---
 
