@@ -68,14 +68,6 @@ Rather than relying exclusively on static dashboards, InsightFlow aims to provid
 
 Businesses generate large volumes of sales data, but extracting meaningful insights often requires manual analysis, technical expertise, and separate analytics tools.
 
-InsightFlow AI addresses this challenge through a unified platform that integrates:
-
-- **Data Engineering:** Dataset ingestion, validation, profiling, and management.
-- **Business Intelligence:** Automated KPIs, analytical summaries, and interactive dashboards.
-- **Predictive Analytics:** Time-series forecasting using Python-based statistical and machine learning models.
-- **Generative AI:** Natural-language interaction with business data.
-- **Agentic AI:** An extensible architecture for intelligent agents, tool execution, and multi-step analytical workflows.
-
 ### Primary Objectives
 
 1. Simplify sales data analysis.
@@ -94,10 +86,8 @@ InsightFlow AI addresses this challenge through a unified platform that integrat
 | ⚙️ Backend API (Production) | [OPEN_BACKEND_URL](YOUR_BACKEND_URL) |
 | ❤️ Health Check(Forecasting Service) | [Open_URL](https://insightfloww-oz7b.onrender.com/) |
 | 🎥 Demo Video | [YOUR_DEMO_VIDEO_URL](YOUR_DEMO_VIDEO_URL) |
-| 📂 Sample Dataset | [YOUR_SAMPLE_DATASET_LINK](YOUR_SAMPLE_DATASET_LINK) |
+| 📂 Sample Dataset | [Sample_Data](https://drive.google.com/file/d/1l9sxXaa1eaMOtw2qiTr2Qlg1bIHzLFdC/view?usp=sharing) |
 
-> **Demo credentials (optional):** `YOUR_DEMO_EMAIL` / `YOUR_DEMO_PASSWORD`
-> Remove this note if you do not want to provide a public demo account.
 
 ---
 
