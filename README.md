@@ -85,37 +85,16 @@ Businesses generate large volumes of sales data, but extracting meaningful insig
 | 🌐 Frontend (Production) | [Open_URL](https://insightflow-frontend-f2sk.onrender.com/) |
 | ⚙️ Backend API (Production) | [OPEN_BACKEND_URL](YOUR_BACKEND_URL) |
 | ❤️ Health Check(Forecasting Service) | [Open_URL](https://insightfloww-oz7b.onrender.com/) |
-| 🎥 Demo Video | [YOUR_DEMO_VIDEO_URL](YOUR_DEMO_VIDEO_URL) |
 | 📂 Sample Dataset | [Sample_Data](https://drive.google.com/file/d/1l9sxXaa1eaMOtw2qiTr2Qlg1bIHzLFdC/view?usp=sharing) |
 
 
 ---
 
-# 3. Screenshots
 
-<!-- 🖼️ Add one screenshot per module. Suggested size: 1280x720 or similar. -->
 
-| Landing Page | Dashboard |
-|---|---|
-| ![Landing Page](docs/images/landing.png) | ![Dashboard](docs/images/dashboard.png) |
+# 3. Key Features
 
-| Dataset Upload | Dataset Details |
-|---|---|
-| ![Dataset Upload](docs/images/upload.png) | ![Dataset Details](docs/images/dataset-details.png) |
-
-| Analytics Dashboard | Forecasting |
-|---|---|
-| ![Analytics](docs/images/analytics.png) | ![Forecasting](docs/images/forecasting.png) |
-
-| AI Analyst | Login / Register |
-|---|---|
-| ![AI Analyst](docs/images/ai-analyst.png) | ![Auth](docs/images/auth.png) |
-
----
-
-# 4. Key Features
-
-## 4.1 Authentication & User Management
+## 3.1 Authentication & User Management
 
 - User registration and login.
 - ASP.NET Core Identity.
@@ -124,10 +103,10 @@ Businesses generate large volumes of sales data, but extracting meaningful insig
 - User-specific dataset management.
 - Authenticated backend operations.
 
-<!-- 🖼️ Screenshot: login / registration page -->
-![Authentication](docs/images/feature-auth.png)
+<img width="1871" height="832" alt="image" src="https://github.com/user-attachments/assets/c5556c3d-ca01-4fa8-adf1-607067f5bca6" />
 
-## 4.2 Dataset Management
+
+## 3.2 Dataset Management
 
 Users can upload and manage their business datasets.
 
@@ -151,7 +130,7 @@ Supported analytical columns include:
 <!-- 🖼️ Screenshot: upload page and dataset list -->
 ![Dataset Management](docs/images/feature-datasets.png)
 
-## 4.3 Business Analytics Dashboard
+## 3.3 Business Analytics Dashboard
 
 The analytics module transforms uploaded datasets into meaningful business information.
 
@@ -171,7 +150,7 @@ Visualization is powered by Chart.js and integrated into Angular through ng2-cha
 <!-- 🖼️ Screenshot: analytics dashboard with charts -->
 ![Analytics Dashboard](docs/images/feature-analytics.png)
 
-## 4.4 Predictive Analytics & Forecasting
+## 3.4 Predictive Analytics & Forecasting
 
 InsightFlow AI incorporates an independent Python forecasting service.
 
@@ -200,7 +179,7 @@ Forecasting is separated from the primary .NET backend through a Python FastAPI 
 <!-- 🖼️ Screenshot: forecast configuration + historical vs predicted chart -->
 ![Forecasting](docs/images/feature-forecasting.png)
 
-## 4.5 AI Analyst — Generative & Agentic AI
+## 3.5 AI Analyst — Generative & Agentic AI
 
 The AI Analyst is envisioned as an intelligent analytical assistant that allows users to interact with their business data using natural language.
 
@@ -221,98 +200,18 @@ The underlying design supports extending the assistant into a specialized agenti
 <!-- 🖼️ Screenshot or GIF: AI Analyst chat interface -->
 ![AI Analyst](docs/images/feature-ai-analyst.png)
 
-## 4.6 Multi-Agent Architecture — Future Extension
 
-The platform is designed to accommodate specialized agents with distinct responsibilities.
+# 4. Technology Stack
 
-Potential agents include:
+## Tech Stack
 
-| Agent | Responsibility |
-|---|---|
-| Data Analyst Agent | Understands datasets and analytical requirements |
-| Analytics Agent | Executes analytical operations |
-| Forecasting Agent | Coordinates forecasting requests |
-| Insight Generation Agent | Identifies important business patterns |
-| Recommendation Agent | Generates actionable business recommendations |
-| Orchestrator Agent | Coordinates specialized agents and workflows |
+- **Frontend:** Angular, TypeScript, HTML, CSS, Bootstrap, Chart.js
+- **Backend:** C#, .NET 10, ASP.NET Core Web API, Entity Framework Core
+- **Database:** SQL Server, SQL Server LocalDB, Azure SQL Database
+- **AI & GenAI:** Microsoft Semantic Kernel, LLMs
+- **Forecasting:** Python, FastAPI, Pandas, NumPy, Statistical Time-Series Models
+- **Cloud & Deployment:** Microsoft Azure, Render, Docker
 
-These are proposed agent responsibilities, not a claim that every specialized agent is currently implemented.
-
----
-
-# 5. Technology Stack
-
-## Frontend
-
-| Technology | Usage |
-|---|---|
-| Angular 22 | Frontend framework |
-| TypeScript | Application logic |
-| HTML5 | UI structure |
-| CSS3 | Styling and responsive layouts |
-| Chart.js | Data visualization |
-| ng2-charts | Angular chart integration |
-| Angular Router | Navigation |
-| Angular Services | API communication |
-| RxJS | Reactive programming |
-| HttpClient | Backend communication |
-
-## Backend
-
-| Technology | Usage |
-|---|---|
-| C# | Backend programming language |
-| .NET 10 | Application framework |
-| ASP.NET Core Web API | REST API development |
-| Entity Framework Core | ORM and database access |
-| ASP.NET Core Identity | Authentication and user management |
-| JWT | Token-based authorization |
-| Swagger / OpenAPI | API documentation |
-| Dependency Injection | Service management |
-
-## Database
-
-| Technology | Usage |
-|---|---|
-| Microsoft SQL Server | Relational database |
-| SQL Server LocalDB | Local development |
-| Azure SQL Database | Cloud database |
-| Entity Framework Core | Database access |
-| Database-First Approach | Existing schema integration |
-
-## AI & Generative AI
-
-| Technology | Usage |
-|---|---|
-| Microsoft Semantic Kernel | LLM orchestration architecture |
-| Large Language Models | Natural-language understanding and generation |
-| Function Calling | Application tool integration |
-| Conversational Context | Contextual interactions |
-| Retrieval-Augmented Generation (RAG) | Planned retrieval-grounded analytical assistance |
-| Multi-Agent Systems | Planned specialized agent collaboration |
-
-## Machine Learning & Forecasting
-
-| Technology | Usage |
-|---|---|
-| Python | Forecasting implementation |
-| FastAPI | Forecasting REST API |
-| Pandas | Data processing |
-| NumPy | Numerical computation |
-| Uvicorn | Python application server |
-| Statistical Time-Series Models | Forecast generation |
-
-## Cloud & DevOps
-
-| Technology | Usage |
-|---|---|
-| Microsoft Azure | Cloud infrastructure |
-| Azure SQL Database | Managed database |
-| Render | Application hosting |
-| Docker | Containerization |
-| Git | Version control |
-| GitHub | Source code management |
-| CI/CD | Deployment automation |
 
 ## Development Tools
 
@@ -330,13 +229,10 @@ These are proposed agent responsibilities, not a claim that every specialized ag
 
 ---
 
-# 6. System Architecture
+# 5. System Architecture
 
 InsightFlow follows a modular architecture with an Angular frontend, a .NET backend, a relational database, and an independent forecasting service.
 
-<!-- 🖼️ ARCHITECTURE DIAGRAM: export a clean diagram (draw.io / Excalidraw / Lucidchart)
-     and place it here. The text diagram below can stay as a fallback. -->
-![System Architecture Diagram](docs/images/architecture-diagram.png)
 
 ```text
                        USER
@@ -427,15 +323,20 @@ Solution1/
 │
 ├── InsightFlow.Api/
 │   ├── Controllers/
-│   ├── Services/
+│   ├── DTOs/
+│   ├── Properties/
 │   ├── Program.cs
 │   ├── appsettings.json
 │   └── InsightFlow.Api.csproj
 │
 ├── InsightFlow.Core/
+│   ├── Analytics/
+│   ├── Authentication/
 │   ├── Models/
 │   ├── Services/
 │   ├── Repositories/
+│   ├── Storage/
+│   ├── Validation/
 │   └── InsightFlow.Core.csproj
 │
 └── Solution1.slnx
@@ -463,14 +364,6 @@ Responsible for:
 - Database-related abstractions.
 - Core application functionality.
 
-### Backend Design Principles
-
-- Separation of concerns.
-- Dependency injection.
-- RESTful API design.
-- Reusable services.
-- User-specific data access.
-- Modular application development.
 
 ---
 
