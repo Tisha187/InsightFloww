@@ -3,7 +3,6 @@
   <img width="300" height="72" alt="image" src="https://github.com/user-attachments/assets/83bddcc4-32da-46f1-a59d-5ada4c2e0679" />
 </p>
 
-<h1 align="center">InsightFlow</h1>
 <h3 align="center">Intelligent Sales Analytics and Predictive Forecasting Platform</h3>
 
 <p align="center">
@@ -11,7 +10,6 @@
 </p>
 
 <p align="center">
-  <!-- 🔗 BADGES: replace YOUR_USERNAME / YOUR_REPO and add/remove as needed -->
   <a href="https://github.com/YOUR_USERNAME/YOUR_REPO/actions"><img src="https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/YOUR_REPO/YOUR_WORKFLOW.yml?label=build" alt="Build Status" /></a>
   <img src="https://img.shields.io/badge/.NET-10-512BD4" alt=".NET 10" />
   <img src="https://img.shields.io/badge/Angular-22-DD0031" alt="Angular 22" />
@@ -20,15 +18,15 @@
 </p>
 
 <p align="center">
-  <a href="YOUR_LIVE_FRONTEND_URL">🌐 Live Demo</a> •
+  <a href="https://insightflow-frontend-f2sk.onrender.com/">🌐 Live Demo</a> •
   <a href="YOUR_BACKEND_SWAGGER_URL">📘 API Docs (Swagger)</a> •
-  <a href="YOUR_DEMO_VIDEO_URL">🎥 Demo Video</a> •
-  <a href="YOUR_PORTFOLIO_OR_LINKEDIN_URL">👤 Author</a>
+  <!-- <a href="YOUR_DEMO_VIDEO_URL">🎥 Demo Video</a> • -->
+  <a href="https://www.linkedin.com/in/tisha-yadav">👤 Author</a>
 </p>
 
-<!-- 🖼️ HERO IMAGE / GIF: a dashboard screenshot or short walkthrough GIF -->
+
 <p align="center">
-  <img src="docs/images/hero-dashboard.png" alt="InsightFlow AI Dashboard" width="90%" />
+  <img width="1342" height="686" alt="image" src="https://github.com/user-attachments/assets/0b31ee3d-113b-43a3-ac92-8d9e51cc613f" />
 </p>
 
 ---
