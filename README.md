@@ -90,11 +90,9 @@ InsightFlow AI addresses this challenge through a unified platform that integrat
 
 | Resource | Link |
 |---|---|
-| 🌐 Frontend (Production) | [YOUR_FRONTEND_URL](YOUR_FRONTEND_URL) |
-| ⚙️ Backend API (Production) | [YOUR_BACKEND_URL](YOUR_BACKEND_URL) |
-| 📘 Swagger / OpenAPI Docs | [YOUR_SWAGGER_URL](YOUR_SWAGGER_URL) |
-| 🐍 Forecasting Service (Production) | [YOUR_FORECASTING_SERVICE_URL](YOUR_FORECASTING_SERVICE_URL) |
-| ❤️ Health Check | [YOUR_HEALTH_CHECK_URL](YOUR_HEALTH_CHECK_URL) |
+| 🌐 Frontend (Production) | [Open_URL](https://insightflow-frontend-f2sk.onrender.com/) |
+| ⚙️ Backend API (Production) | [OPEN_BACKEND_URL](YOUR_BACKEND_URL) |
+| ❤️ Health Check(Forecasting Service) | [Open_URL](https://insightfloww-oz7b.onrender.com/) |
 | 🎥 Demo Video | [YOUR_DEMO_VIDEO_URL](YOUR_DEMO_VIDEO_URL) |
 | 📂 Sample Dataset | [YOUR_SAMPLE_DATASET_LINK](YOUR_SAMPLE_DATASET_LINK) |
 
