@@ -43,3 +43,5 @@ InsightFlowStorage/
 # Allow safe example configuration templates
 !.env.example
 !**/.env.example
+
+Database_insightFlow_Azure.sql
