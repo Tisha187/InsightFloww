@@ -44,7 +44,7 @@ export class Upload {
   uploadedDataset: UploadResponse | null = null;
   isDragging = false;
 
-  readonly maxFileSize = 50 * 1024 * 1024;
+  readonly maxFileSize = 10 * 1024 * 1024;
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -81,7 +81,7 @@ export class Upload {
 
     if (file.size > this.maxFileSize) {
       this.selectedFile = null;
-      this.errorMessage = 'The file exceeds the 50 MB upload limit.';
+      this.errorMessage = 'The file exceeds the 10 MB upload limit.';
       return;
     }
 
