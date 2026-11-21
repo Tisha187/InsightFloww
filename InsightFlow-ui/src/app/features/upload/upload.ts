@@ -141,7 +141,7 @@ export class Upload {
 
         this.http
           .post<ProcessResponse>(
-            `${ environment.apiUrl } / Datasets / ${ response.id } / process`,
+            `${environment.apiUrl}/Datasets/${response.id}/process`,
             {},
             { headers }
           )

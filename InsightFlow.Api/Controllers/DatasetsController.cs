@@ -106,10 +106,16 @@ public class DatasetsController : ControllerBase
             await using var input = request.File.OpenReadStream();
 
             await _fileValidator.ValidateAsync(
-                input,
-                originalFileName,
-                maxSize,
-                cancellationToken);
+             input,
+             originalFileName,
+             maxSize,
+             cancellationToken);
+
+            // Reset stream position after validation.
+            if (input.CanSeek)
+            {
+                input.Position = 0;
+            }
 
             storageKey = await _fileStorage.SaveAsync(
                 input,

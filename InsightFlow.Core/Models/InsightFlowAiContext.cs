@@ -41,6 +41,8 @@ public partial class InsightFlowAiContext : DbContext
 
     public virtual DbSet<ForecastRun> ForecastRuns { get; set; }
 
+    public virtual DbSet<DatasetFile> DatasetFiles { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AgentToolExecution>(entity =>
@@ -269,6 +271,22 @@ public partial class InsightFlowAiContext : DbContext
                 .HasForeignKey(d => new { d.DatasetId, d.UserId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ForecastRuns_Datasets_Owner");
+        });
+
+        modelBuilder.Entity<DatasetFile>(entity =>
+        {
+            entity.HasKey(e => e.StorageKey)
+                .HasName("PK_DatasetFiles");
+
+            entity.Property(e => e.StorageKey)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.FileContent)
+                .HasColumnType("varbinary(max)");
+
+            entity.Property(e => e.CreatedAtUtc)
+                .HasPrecision(3)
+                .HasDefaultValueSql("(sysutcdatetime())");
         });
 
         OnModelCreatingPartial(modelBuilder);

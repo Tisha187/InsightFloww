@@ -69,9 +69,9 @@ builder.Services.AddScoped<DatasetAnalyticsService>();
 
 builder.Services.AddScoped<DatasetReader>();
 
-builder.Services.AddSingleton<
+builder.Services.AddScoped<
     IFileStorageService,
-    LocalFileStorageService>();
+    SqlFileStorageService>();
 
 builder.Services.AddSingleton<DatasetFileValidator>();
 
